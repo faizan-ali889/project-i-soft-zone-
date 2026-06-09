@@ -20,13 +20,16 @@ router.post('/register', async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
+        // Determine role based on email
+        const role = email.toLowerCase().includes('admin') ? 'ADMIN' : 'EMPLOYEE';
+
         // 3. Insert into PostgreSQL
         const newUser = await db.query(
-            'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *',
-            [name, email, hashedPassword]
+            'INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4) RETURNING *',
+            [name, email, hashedPassword, role]
         );
 
-        res.status(201).json({ message: "User registered successfully!" });
+        res.status(201).json({ message: `User registered successfully as ${role}!` });
     } catch (error) {
         console.error(error.message);
         res.status(500).json({ message: "Server error during registration" });
@@ -62,14 +65,7 @@ router.post('/login', async (req, res) => {
 // Get User Profile Route (Protected)
 router.get('/user-profile', authMiddleware, async (req, res) => {
     try {
-        // req.user contains the user id from the middleware
-        const user = await db.query('SELECT id, name, email FROM users WHERE id = $1', [req.user]);
-        
-        if (user.rows.length === 0) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        res.json({ user: user.rows[0] });
+        res.json({ user: req.user });
     } catch (error) {
         console.error(error.message);
         res.status(500).json({ message: "Server error fetching user profile" });

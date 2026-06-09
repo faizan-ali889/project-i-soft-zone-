@@ -16,7 +16,7 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      const response = await authAPI.register(name, email, password);
+      await authAPI.register(name, email, password);
       navigate('/login');
     } catch (error) {
       const errorMsg = error.response?.data?.message || 'Registration failed. Please try again.';
@@ -27,61 +27,240 @@ const Signup = () => {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: '#121212', color: '#fff' }}>
-      <form onSubmit={handleSignup} style={{ padding: '2.5rem', borderRadius: '12px', backgroundColor: '#1e1e1e', width: '320px', textAlign: 'center', boxShadow: '0 4px 15px rgba(0,0,0,0.3)' }}>
-        <h2 style={{ marginBottom: '1.5rem' }}>Create Account</h2>
+    <div style={{ 
+      display: 'flex', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      minHeight: '100vh', 
+      backgroundColor: 'var(--bg-base)', 
+      backgroundImage: 'var(--bg-base-gradient)', 
+      color: 'var(--text-primary)',
+      fontFamily: 'var(--font-sans)',
+      padding: '1.5rem',
+      boxSizing: 'border-box'
+    }}>
+      <form 
+        onSubmit={handleSignup} 
+        style={{ 
+          padding: '3rem 2.5rem', 
+          borderRadius: '16px', 
+          backgroundColor: 'var(--bg-card)', 
+          backdropFilter: 'var(--card-blur)',
+          border: '1px solid var(--border-color)',
+          width: '100%',
+          maxWidth: '380px', 
+          textAlign: 'center', 
+          boxShadow: 'var(--shadow-card)',
+          animation: 'fadeIn 0.5s ease-out',
+          boxSizing: 'border-box'
+        }}
+      >
+        <h2 style={{ 
+          marginBottom: '0.5rem', 
+          fontWeight: '800', 
+          letterSpacing: '-0.025em', 
+          color: 'var(--text-primary)',
+          fontSize: '1.75rem'
+        }}>
+          Create Account
+        </h2>
+        <p style={{ 
+          color: 'var(--text-secondary)', 
+          fontSize: '0.9rem', 
+          marginBottom: '2rem',
+          marginTop: '0'
+        }}>
+          Register to mark attendance and manage leaves
+        </p>
         
         {error && (
-          <div style={{ backgroundColor: '#4a0000', color: '#ff6b6b', padding: '0.7rem', borderRadius: '6px', marginBottom: '1rem', fontSize: '0.9rem' }}>
+          <div style={{ 
+            backgroundColor: 'rgba(239, 68, 68, 0.05)', 
+            color: '#ef4444', 
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            padding: '0.75rem 1rem', 
+            borderRadius: '8px', 
+            marginBottom: '1.5rem', 
+            fontSize: '0.88rem',
+            textAlign: 'left'
+          }}>
             {error}
           </div>
         )}
         
-        <div style={{ marginBottom: '1rem', textAlign: 'left' }}>
-          <label style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.9rem' }}>Full Name</label>
+        <div style={{ marginBottom: '1.25rem', textAlign: 'left' }}>
+          <label style={{ 
+            display: 'block', 
+            marginBottom: '0.4rem', 
+            fontSize: '0.85rem', 
+            fontWeight: '600',
+            color: 'var(--text-secondary)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em'
+          }}>
+            Full Name
+          </label>
           <input 
             type="text" 
             value={name} 
             onChange={(e) => setName(e.target.value)} 
             required 
             disabled={loading}
-            style={{ width: '100%', padding: '0.6rem', borderRadius: '6px', border: '1px solid #333', backgroundColor: '#2a2a2a', color: '#fff', boxSizing: 'border-box' }}
+            placeholder="John Doe"
+            style={{ 
+              width: '100%', 
+              padding: '0.75rem 1rem', 
+              borderRadius: '8px', 
+              border: '1px solid var(--border-color)', 
+              backgroundColor: '#ffffff', 
+              color: 'var(--text-primary)', 
+              fontSize: '0.95rem',
+              boxSizing: 'border-box',
+              outline: 'none',
+              transition: 'var(--transition-smooth)'
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = 'var(--accent-primary)';
+              e.target.style.boxShadow = '0 0 0 3px rgba(79, 70, 229, 0.1)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = 'var(--border-color)';
+              e.target.style.boxShadow = 'none';
+            }}
           />
         </div>
 
-        <div style={{ marginBottom: '1rem', textAlign: 'left' }}>
-          <label style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.9rem' }}>Email</label>
+        <div style={{ marginBottom: '1.25rem', textAlign: 'left' }}>
+          <label style={{ 
+            display: 'block', 
+            marginBottom: '0.4rem', 
+            fontSize: '0.85rem', 
+            fontWeight: '600',
+            color: 'var(--text-secondary)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em'
+          }}>
+            Email Address
+          </label>
           <input 
             type="email" 
             value={email} 
             onChange={(e) => setEmail(e.target.value)} 
             required 
             disabled={loading}
-            style={{ width: '100%', padding: '0.6rem', borderRadius: '6px', border: '1px solid #333', backgroundColor: '#2a2a2a', color: '#fff', boxSizing: 'border-box' }}
+            placeholder="name@company.com"
+            style={{ 
+              width: '100%', 
+              padding: '0.75rem 1rem', 
+              borderRadius: '8px', 
+              border: '1px solid var(--border-color)', 
+              backgroundColor: '#ffffff', 
+              color: 'var(--text-primary)', 
+              fontSize: '0.95rem',
+              boxSizing: 'border-box',
+              outline: 'none',
+              transition: 'var(--transition-smooth)'
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = 'var(--accent-primary)';
+              e.target.style.boxShadow = '0 0 0 3px rgba(79, 70, 229, 0.1)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = 'var(--border-color)';
+              e.target.style.boxShadow = 'none';
+            }}
           />
         </div>
 
-        <div style={{ marginBottom: '1.5rem', textAlign: 'left' }}>
-          <label style={{ display: 'block', marginBottom: '0.3rem', fontSize: '0.9rem' }}>Password</label>
+        <div style={{ marginBottom: '2rem', textAlign: 'left' }}>
+          <label style={{ 
+            display: 'block', 
+            marginBottom: '0.4rem', 
+            fontSize: '0.85rem', 
+            fontWeight: '600',
+            color: 'var(--text-secondary)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em'
+          }}>
+            Password
+          </label>
           <input 
             type="password" 
             value={password} 
             onChange={(e) => setPassword(e.target.value)} 
             required 
             disabled={loading}
-            style={{ width: '100%', padding: '0.6rem', borderRadius: '6px', border: '1px solid #333', backgroundColor: '#2a2a2a', color: '#fff', boxSizing: 'border-box' }}
+            placeholder="••••••••"
+            style={{ 
+              width: '100%', 
+              padding: '0.75rem 1rem', 
+              borderRadius: '8px', 
+              border: '1px solid var(--border-color)', 
+              backgroundColor: '#ffffff', 
+              color: 'var(--text-primary)', 
+              fontSize: '0.95rem',
+              boxSizing: 'border-box',
+              outline: 'none',
+              transition: 'var(--transition-smooth)'
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = 'var(--accent-primary)';
+              e.target.style.boxShadow = '0 0 0 3px rgba(79, 70, 229, 0.1)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = 'var(--border-color)';
+              e.target.style.boxShadow = 'none';
+            }}
           />
         </div>
 
-        <button type="submit" disabled={loading} style={{ width: '100%', padding: '0.7rem', backgroundColor: loading ? '#555' : '#28a745', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: loading ? 'not-allowed' : 'pointer', marginBottom: '1rem' }}>
+        <button 
+          type="submit" 
+          disabled={loading} 
+          style={{ 
+            width: '100%', 
+            padding: '0.75rem 1rem', 
+            background: loading ? '#cbd5e1' : 'var(--accent-gradient)', 
+            color: '#ffffff', 
+            border: 'none', 
+            borderRadius: '8px', 
+            fontWeight: '600', 
+            fontSize: '0.95rem',
+            cursor: loading ? 'not-allowed' : 'pointer', 
+            marginBottom: '1.5rem',
+            boxShadow: loading ? 'none' : '0 4px 12px rgba(79, 70, 229, 0.25)',
+            transition: 'var(--transition-smooth)'
+          }}
+          onMouseEnter={(e) => {
+            if (!loading) {
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = '0 6px 15px rgba(79, 70, 229, 0.35)';
+              e.currentTarget.style.background = 'var(--accent-gradient-hover)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!loading) {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(79, 70, 229, 0.25)';
+              e.currentTarget.style.background = 'var(--accent-gradient)';
+            }
+          }}
+        >
           {loading ? 'Registering...' : 'Register'}
         </button>
 
-        <p style={{ fontSize: '0.9rem', color: '#aaa', margin: '0' }}>
+        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', margin: '0' }}>
           Already have an account?{' '}
           <span 
             onClick={() => navigate('/login')} 
-            style={{ color: '#007bff', cursor: 'pointer', textDecoration: 'underline', fontWeight: '500' }}
+            style={{ 
+              color: 'var(--accent-primary)', 
+              cursor: 'pointer', 
+              fontWeight: '600',
+              transition: 'var(--transition-smooth)'
+            }}
+            onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
+            onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
           >
             Log In
           </span>

@@ -32,7 +32,7 @@ router.post('/', authMiddleware, async (req, res) => {
         // Create employee profile
         const employeeResult = await db.query(
             'INSERT INTO employee_profiles (user_id, department_id, phone, address, designation, salary) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-            [req.user, department_id, phone, address, designation, salary]
+            [req.user.id, department_id, phone, address, designation, salary]
         );
 
         const employee_id = employeeResult.rows[0].id;
@@ -70,9 +70,13 @@ router.get('/', async (req, res) => {
                 ep.created_at,
                 u.name as employee_name,
                 u.email,
+                u.role,
+                u.reporting_manager_id,
+                m.name as manager_name,
                 d.department_name
             FROM employee_profiles ep
             INNER JOIN users u ON ep.user_id = u.id
+            LEFT JOIN users m ON u.reporting_manager_id = m.id
             INNER JOIN departments d ON ep.department_id = d.id
             ORDER BY ep.id DESC
         `);
@@ -99,9 +103,13 @@ router.get('/:id', async (req, res) => {
                 ep.created_at,
                 u.name as employee_name,
                 u.email,
+                u.role,
+                u.reporting_manager_id,
+                m.name as manager_name,
                 d.department_name
             FROM employee_profiles ep
             INNER JOIN users u ON ep.user_id = u.id
+            LEFT JOIN users m ON u.reporting_manager_id = m.id
             INNER JOIN departments d ON ep.department_id = d.id
             WHERE ep.id = $1`,
             [id]
@@ -139,8 +147,12 @@ router.get('/:id', async (req, res) => {
 
 // PUT update employee
 router.put('/:id', authMiddleware, async (req, res) => {
+    if (req.user.role !== 'ADMIN') {
+        return res.status(403).json({ message: 'Forbidden: Admin access required' });
+    }
+
     const { id } = req.params;
-    const { department_id, phone, address, designation, salary, skills } = req.body;
+    const { department_id, phone, address, designation, salary, skills, role, reporting_manager_id } = req.body;
 
     if (!department_id || !phone || !address || !designation || !salary) {
         return res.status(400).json({ message: 'All fields are required' });
@@ -155,6 +167,32 @@ router.put('/:id', authMiddleware, async (req, res) => {
 
         if (result.rows.length === 0) {
             return res.status(404).json({ message: 'Employee not found' });
+        }
+
+        // Update user's role and manager in users table if provided
+        if (role !== undefined || reporting_manager_id !== undefined) {
+            let updateFields = [];
+            let values = [];
+            
+            if (role !== undefined && role !== null) {
+                values.push(role);
+                updateFields.push(`role = $${values.length}`);
+            }
+            
+            if (reporting_manager_id !== undefined) {
+                values.push(reporting_manager_id);
+                updateFields.push(`reporting_manager_id = $${values.length}`);
+            }
+            
+            if (updateFields.length > 0) {
+                values.push(id);
+                const query = `
+                    UPDATE users 
+                    SET ${updateFields.join(', ')} 
+                    WHERE id = (SELECT user_id FROM employee_profiles WHERE id = $${values.length})
+                `;
+                await db.query(query, values);
+            }
         }
 
         // Update skills if provided
@@ -183,6 +221,10 @@ router.put('/:id', authMiddleware, async (req, res) => {
 
 // DELETE employee
 router.delete('/:id', authMiddleware, async (req, res) => {
+    if (req.user.role !== 'ADMIN') {
+        return res.status(403).json({ message: 'Forbidden: Admin access required' });
+    }
+
     const { id } = req.params;
 
     try {

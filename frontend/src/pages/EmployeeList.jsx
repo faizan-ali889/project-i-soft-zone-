@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { employeeAPI } from '../services/api';
+import Table from '../components/Table';
+import Button from '../components/Button';
+import Loader from '../components/Loader';
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
@@ -35,118 +38,87 @@ const EmployeeList = () => {
     }
   };
 
-  if (loading) return <h2 style={{ textAlign: 'center', marginTop: '5rem', color: '#fff' }}>Loading...</h2>;
+  if (loading) return <Loader message="Accessing Employee Directory..." fullScreen />;
 
   return (
-    <div style={{ backgroundColor: '#121212', minHeight: '100vh', padding: '2rem', color: '#fff' }}>
-      <button 
-        onClick={() => navigate('/dashboard')}
-        style={{
-          marginBottom: '1rem',
-          padding: '0.6rem 1rem',
-          backgroundColor: '#666',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '6px',
-          cursor: 'pointer'
-        }}
-      >
-        ← Back to Dashboard
-      </button>
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-        <h1 style={{ margin: '0' }}>Employee List</h1>
-        <button 
-          onClick={() => navigate('/create-employee')}
-          style={{
-            padding: '0.6rem 1rem',
-            backgroundColor: '#28a745',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            fontWeight: 'bold'
-          }}
-        >
+    <div style={{ 
+      backgroundColor: 'var(--bg-base)', 
+      backgroundImage: 'var(--bg-base-gradient)', 
+      minHeight: '100vh', 
+      padding: '2.5rem', 
+      color: 'var(--text-primary)',
+      fontFamily: 'var(--font-sans)',
+      animation: 'fadeIn 0.5s ease-out'
+    }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1.5rem' }}>
+        <div>
+          <Button onClick={() => navigate('/dashboard')} variant="secondary">
+            ← Dashboard
+          </Button>
+          <h1 style={{ 
+            margin: '1rem 0 0 0', 
+            fontSize: '2.2rem', 
+            fontWeight: '800',
+            letterSpacing: '-0.025em',
+            background: 'linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
+          }}>
+            Employee Directory
+          </h1>
+        </div>
+        <Button onClick={() => navigate('/create-employee')} variant="primary" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none', boxShadow: '0 4px 12px rgba(5, 150, 105, 0.2)' }}>
           ➕ Add Employee
-        </button>
+        </Button>
       </div>
 
       {error && (
-        <div style={{ backgroundColor: '#4a0000', color: '#ff6b6b', padding: '1rem', borderRadius: '6px', marginBottom: '1rem' }}>
+        <div style={{ 
+          backgroundColor: 'rgba(239, 68, 68, 0.05)', 
+          border: '1px solid rgba(239, 68, 68, 0.2)', 
+          color: '#ef4444', 
+          padding: '1rem', 
+          borderRadius: '8px', 
+          marginBottom: '1.5rem',
+          fontSize: '0.92rem'
+        }}>
           {error}
         </div>
       )}
 
-      {employees.length === 0 ? (
-        <p style={{ textAlign: 'center', color: '#aaa' }}>No employees found</p>
-      ) : (
-        <div style={{
-          backgroundColor: '#1e1e1e',
-          borderRadius: '12px',
-          overflow: 'hidden',
-          boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
-          overflowX: 'auto'
-        }}>
-          <table style={{
-            width: '100%',
-            borderCollapse: 'collapse'
-          }}>
-            <thead>
-              <tr style={{ backgroundColor: '#2a2a2a', borderBottom: '2px solid #333' }}>
-                <th style={{ padding: '1rem', textAlign: 'left' }}>ID</th>
-                <th style={{ padding: '1rem', textAlign: 'left' }}>Name</th>
-                <th style={{ padding: '1rem', textAlign: 'left' }}>Email</th>
-                <th style={{ padding: '1rem', textAlign: 'left' }}>Department</th>
-                <th style={{ padding: '1rem', textAlign: 'left' }}>Designation</th>
-                <th style={{ padding: '1rem', textAlign: 'left' }}>Salary</th>
-                <th style={{ padding: '1rem', textAlign: 'left' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {employees.map((emp) => (
-                <tr key={emp.id} style={{ borderBottom: '1px solid #333' }}>
-                  <td style={{ padding: '1rem' }}>{emp.id}</td>
-                  <td style={{ padding: '1rem' }}>{emp.employee_name}</td>
-                  <td style={{ padding: '1rem' }}>{emp.email}</td>
-                  <td style={{ padding: '1rem' }}>{emp.department_name}</td>
-                  <td style={{ padding: '1rem' }}>{emp.designation}</td>
-                  <td style={{ padding: '1rem' }}>₹{emp.salary}</td>
-                  <td style={{ padding: '1rem' }}>
-                    <button 
-                      onClick={() => navigate(`/edit-employee/${emp.id}`)}
-                      style={{
-                        padding: '0.4rem 0.8rem',
-                        backgroundColor: '#007bff',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        marginRight: '0.5rem'
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <button 
-                      onClick={() => handleDelete(emp.id)}
-                      style={{
-                        padding: '0.4rem 0.8rem',
-                        backgroundColor: '#e50914',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      {/* Directory Table */}
+      <Table
+        headers={['ID', 'Name', 'Email', 'Department', 'Designation', 'Salary', 'Actions']}
+        data={employees}
+        emptyMessage="No employees registered in the system."
+        renderRow={(emp) => (
+          <>
+            <td style={{ padding: '1rem 1.2rem', fontWeight: '600', color: 'var(--text-primary)' }}>{emp.id}</td>
+            <td style={{ padding: '1rem 1.2rem', fontWeight: '600', color: 'var(--text-primary)' }}>{emp.employee_name}</td>
+            <td style={{ padding: '1rem 1.2rem', color: 'var(--text-secondary)' }}>{emp.email}</td>
+            <td style={{ padding: '1rem 1.2rem', color: 'var(--text-secondary)' }}>{emp.department_name}</td>
+            <td style={{ padding: '1rem 1.2rem', color: 'var(--text-primary)' }}>{emp.designation}</td>
+            <td style={{ padding: '1rem 1.2rem', fontWeight: '500' }}>₹{parseFloat(emp.salary).toLocaleString('en-IN')}</td>
+            <td style={{ padding: '1rem 1.2rem', display: 'flex', gap: '0.5rem' }}>
+              <Button 
+                onClick={() => navigate(`/edit-employee/${emp.id}`)} 
+                variant="primary" 
+                style={{ padding: '0.4rem 0.8rem', fontSize: '0.82rem' }}
+              >
+                Edit
+              </Button>
+              <Button 
+                onClick={() => handleDelete(emp.id)} 
+                variant="danger" 
+                style={{ padding: '0.4rem 0.8rem', fontSize: '0.82rem' }}
+              >
+                Delete
+              </Button>
+            </td>
+          </>
+        )}
+      />
     </div>
   );
 };

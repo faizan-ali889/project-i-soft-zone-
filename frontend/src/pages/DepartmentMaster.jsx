@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { departmentAPI } from '../services/api';
+import Table from '../components/Table';
+import Button from '../components/Button';
+import Loader from '../components/Loader';
 
 const DepartmentMaster = () => {
   const [departments, setDepartments] = useState([]);
@@ -76,184 +79,171 @@ const DepartmentMaster = () => {
     }
   };
 
-  if (loading) return <h2 style={{ textAlign: 'center', marginTop: '5rem', color: '#fff' }}>Loading...</h2>;
+  if (loading) return <Loader message="Accessing Departments Registry..." fullScreen />;
 
   return (
-    <div style={{ backgroundColor: '#121212', minHeight: '100vh', padding: '2rem', color: '#fff' }}>
-      <button 
-        onClick={() => navigate('/dashboard')}
-        style={{
-          marginBottom: '1rem',
-          padding: '0.6rem 1rem',
-          backgroundColor: '#666',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '6px',
-          cursor: 'pointer'
-        }}
-      >
-        ← Back to Dashboard
-      </button>
-
-      <h1>Department Master</h1>
+    <div style={{ 
+      backgroundColor: 'var(--bg-base)', 
+      backgroundImage: 'var(--bg-base-gradient)', 
+      minHeight: '100vh', 
+      padding: '2.5rem', 
+      color: 'var(--text-primary)',
+      fontFamily: 'var(--font-sans)',
+      animation: 'fadeIn 0.5s ease-out'
+    }}>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1.5rem' }}>
+        <div>
+          <Button onClick={() => navigate('/dashboard')} variant="secondary">
+            ← Dashboard
+          </Button>
+          <h1 style={{ 
+            margin: '1rem 0 0 0', 
+            fontSize: '2.2rem', 
+            fontWeight: '800',
+            letterSpacing: '-0.025em',
+            background: 'linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
+          }}>
+            Department Master
+          </h1>
+        </div>
+      </div>
 
       {error && (
-        <div style={{ backgroundColor: '#4a0000', color: '#ff6b6b', padding: '1rem', borderRadius: '6px', marginBottom: '1rem' }}>
+        <div style={{ 
+          backgroundColor: 'rgba(239, 68, 68, 0.05)', 
+          border: '1px solid rgba(239, 68, 68, 0.2)', 
+          color: '#ef4444', 
+          padding: '1rem', 
+          borderRadius: '8px', 
+          marginBottom: '1.5rem',
+          fontSize: '0.92rem'
+        }}>
           {error}
         </div>
       )}
 
       {/* Add Department Form */}
       <form onSubmit={handleAdd} style={{
-        backgroundColor: '#1e1e1e',
-        padding: '1.5rem',
-        borderRadius: '12px',
-        marginBottom: '2rem',
-        maxWidth: '500px'
+        backgroundColor: 'var(--bg-card)',
+        backdropFilter: 'var(--card-blur)',
+        padding: '2rem',
+        borderRadius: '16px',
+        border: '1px solid var(--border-color)',
+        boxShadow: 'var(--shadow-card)',
+        marginBottom: '2.5rem',
+        maxWidth: '500px',
+        animation: 'slideUp 0.3s ease-out'
       }}>
-        <h3 style={{ marginTop: '0' }}>Add New Department</h3>
-        <div style={{ marginBottom: '1rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem' }}>Department Name</label>
+        <h3 style={{ marginTop: '0', fontWeight: '700', fontSize: '1.1rem', marginBottom: '1.25rem' }}>Add New Department</h3>
+        <div style={{ marginBottom: '1.25rem' }}>
+          <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-secondary)' }}>Department Name</label>
           <input 
             type="text" 
             value={newDepartment}
             onChange={(e) => setNewDepartment(e.target.value)}
+            placeholder="e.g. Finance"
             style={{
               width: '100%',
-              padding: '0.6rem',
-              borderRadius: '6px',
-              border: '1px solid #333',
-              backgroundColor: '#2a2a2a',
-              color: '#fff',
-              boxSizing: 'border-box'
+              padding: '0.75rem 1rem',
+              borderRadius: '8px',
+              border: '1px solid var(--border-color)',
+              backgroundColor: '#ffffff',
+              color: 'var(--text-primary)',
+              boxSizing: 'border-box',
+              outline: 'none',
+              transition: 'var(--transition-smooth)'
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = 'var(--accent-primary)';
+              e.target.style.boxShadow = '0 0 0 3px rgba(79, 70, 229, 0.1)';
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = 'var(--border-color)';
+              e.target.style.boxShadow = 'none';
             }}
           />
         </div>
-        <button type="submit" style={{
-          padding: '0.6rem 1rem',
-          backgroundColor: '#28a745',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '6px',
-          cursor: 'pointer',
-          fontWeight: 'bold'
-        }}>
+        <Button type="submit" variant="primary" style={{ padding: '0.6rem 1.5rem' }}>
           Add Department
-        </button>
+        </Button>
       </form>
 
       {/* Departments List */}
-      <div style={{
-        backgroundColor: '#1e1e1e',
-        borderRadius: '12px',
-        overflow: 'hidden',
-        boxShadow: '0 4px 15px rgba(0,0,0,0.3)'
-      }}>
-        <table style={{
-          width: '100%',
-          borderCollapse: 'collapse'
-        }}>
-          <thead>
-            <tr style={{ backgroundColor: '#2a2a2a', borderBottom: '2px solid #333' }}>
-              <th style={{ padding: '1rem', textAlign: 'left' }}>ID</th>
-              <th style={{ padding: '1rem', textAlign: 'left' }}>Department Name</th>
-              <th style={{ padding: '1rem', textAlign: 'left' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {departments.map((dept) => (
-              <tr key={dept.id} style={{ borderBottom: '1px solid #333' }}>
-                <td style={{ padding: '1rem' }}>{dept.id}</td>
-                <td style={{ padding: '1rem' }}>
-                  {editingId === dept.id ? (
-                    <input 
-                      type="text" 
-                      value={editingName}
-                      onChange={(e) => setEditingName(e.target.value)}
-                      style={{
-                        padding: '0.4rem',
-                        borderRadius: '4px',
-                        border: '1px solid #333',
-                        backgroundColor: '#2a2a2a',
-                        color: '#fff',
-                        width: '200px'
-                      }}
-                    />
-                  ) : (
-                    dept.department_name
-                  )}
-                </td>
-                <td style={{ padding: '1rem' }}>
-                  {editingId === dept.id ? (
-                    <>
-                      <button 
-                        onClick={() => handleUpdate(dept.id)}
-                        style={{
-                          padding: '0.4rem 0.8rem',
-                          backgroundColor: '#28a745',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          marginRight: '0.5rem'
-                        }}
-                      >
-                        Save
-                      </button>
-                      <button 
-                        onClick={() => setEditingId(null)}
-                        style={{
-                          padding: '0.4rem 0.8rem',
-                          backgroundColor: '#666',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        Cancel
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button 
-                        onClick={() => {
-                          setEditingId(dept.id);
-                          setEditingName(dept.department_name);
-                        }}
-                        style={{
-                          padding: '0.4rem 0.8rem',
-                          backgroundColor: '#007bff',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          marginRight: '0.5rem'
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(dept.id)}
-                        style={{
-                          padding: '0.4rem 0.8rem',
-                          backgroundColor: '#e50914',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table
+        headers={['ID', 'Department Name', 'Actions']}
+        data={departments}
+        emptyMessage="No departments registered in the system."
+        renderRow={(dept) => (
+          <>
+            <td style={{ padding: '1rem 1.2rem', fontWeight: '600', color: 'var(--text-primary)' }}>{dept.id}</td>
+            <td style={{ padding: '1rem 1.2rem' }}>
+              {editingId === dept.id ? (
+                <input 
+                  type="text" 
+                  value={editingName}
+                  onChange={(e) => setEditingName(e.target.value)}
+                  style={{
+                    padding: '0.5rem 0.75rem',
+                    borderRadius: '8px',
+                    border: '1px solid var(--border-color)',
+                    backgroundColor: '#ffffff',
+                    color: 'var(--text-primary)',
+                    width: '240px',
+                    boxSizing: 'border-box',
+                    outline: 'none',
+                    transition: 'var(--transition-smooth)'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = 'var(--accent-primary)';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(79, 70, 229, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'var(--border-color)';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
+              ) : (
+                <span style={{ color: 'var(--text-primary)', fontWeight: '600' }}>{dept.department_name}</span>
+              )}
+            </td>
+            <td style={{ padding: '1rem 1.2rem', display: 'flex', gap: '0.5rem' }}>
+              {editingId === dept.id ? (
+                <>
+                  <Button onClick={() => handleUpdate(dept.id)} variant="success" style={{ padding: '0.4rem 0.8rem', fontSize: '0.82rem' }}>
+                    Save
+                  </Button>
+                  <Button onClick={() => setEditingId(null)} variant="secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.82rem' }}>
+                    Cancel
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button 
+                    onClick={() => {
+                      setEditingId(dept.id);
+                      setEditingName(dept.department_name);
+                    }} 
+                    variant="primary"
+                    style={{ padding: '0.4rem 0.8rem', fontSize: '0.82rem' }}
+                  >
+                    Edit
+                  </Button>
+                  <Button 
+                    onClick={() => handleDelete(dept.id)} 
+                    variant="danger"
+                    style={{ padding: '0.4rem 0.8rem', fontSize: '0.82rem' }}
+                  >
+                    Delete
+                  </Button>
+                </>
+              )}
+            </td>
+          </>
+        )}
+      />
     </div>
   );
 };

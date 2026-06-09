@@ -106,4 +106,82 @@ export const employeeAPI = {
   }
 };
 
+// Leave APIs
+export const leaveAPI = {
+  apply: (leaveData) =>
+    apiClient.post('/leaves/apply', leaveData),
+  
+  getMyLeaves: (status) =>
+    apiClient.get('/leaves/my-leaves', { params: { status } }),
+  
+  getBalance: (year) =>
+    apiClient.get('/leaves/balance', { params: { year } }),
+  
+  getTypes: () =>
+    apiClient.get('/leaves/types'),
+  
+  getPending: (departmentId) =>
+    apiClient.get('/leaves/pending', { params: { departmentId } }),
+  
+  approve: (leaveId, remarks) =>
+    apiClient.put(`/leaves/${leaveId}/approve`, { remarks }),
+  
+  reject: (leaveId, remarks) =>
+    apiClient.put(`/leaves/${leaveId}/reject`, { remarks }),
+  
+  getApprovalHistory: (leaveId) =>
+    apiClient.get(`/leaves/${leaveId}/approval-history`),
+  
+  getAuditLogs: (filters) =>
+    apiClient.get('/leaves/admin/audit-logs', { params: filters }),
+  
+  getStatistics: (departmentId) =>
+    apiClient.get('/leaves/admin/statistics', { params: { departmentId } }),
+
+  getReports: () =>
+    apiClient.get('/leaves/admin/reports'),
+
+  getAdvancedReports: () =>
+    apiClient.get('/leaves/admin/advanced-reports')
+};
+
+// Attendance APIs
+export const attendanceAPI = {
+  mark: () =>
+    apiClient.post('/attendance/mark'),
+  
+  getTodayStatus: () =>
+    apiClient.get('/attendance/today'),
+  
+  getSettings: () =>
+    apiClient.get('/attendance/settings'),
+  
+  updateSettings: (startTime, endTime) =>
+    apiClient.put('/attendance/settings', { startTime, endTime }),
+  
+  getRegistry: (date) =>
+    apiClient.get('/attendance/registry', { params: { date } })
+};
+
+// Asset APIs
+export const assetAPI = {
+  getAll: (params) =>
+    apiClient.get('/assets', { params }),
+
+  getMyAllocations: () =>
+    apiClient.get('/assets/my-allocations'),
+
+  create: (assetData) =>
+    apiClient.post('/assets', assetData),
+
+  allocate: (allocationData) =>
+    apiClient.post('/assets/allocate', allocationData),
+
+  return: (returnData) =>
+    apiClient.post('/assets/return', returnData),
+
+  getReports: () =>
+    apiClient.get('/assets/reports')
+};
+
 export default apiClient;
