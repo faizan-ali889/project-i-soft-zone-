@@ -1,75 +1,76 @@
+// Attendance Router Controller
 const AttendanceService = require('../services/attendanceService');
 
 class AttendanceController {
-  // Mark Attendance
-  static async markAttendance(req, res) {
+  // Mark attendance present for logged in user
+  static async markAttendance(req, res, next) {
     try {
       const record = await AttendanceService.markAttendance(req.user.id);
       res.status(201).json({
-        message: 'Attendance marked successfully!',
-        record
+        message: 'Attendance marked successfully',
+        attendance: record
       });
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      next(error);
     }
   }
 
-  // Get Today's Status
-  static async getTodayStatus(req, res) {
+  // Get logged-in user's today attendance record
+  static async getTodayStatus(req, res, next) {
     try {
       const record = await AttendanceService.getTodayStatus(req.user.id);
       res.status(200).json({
-        record
+        message: 'Today\'s attendance status retrieved successfully',
+        attendance: record
       });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   }
 
-  // Get Attendance Settings
-  static async getSettings(req, res) {
+  // Get active attendance window settings
+  static async getSettings(req, res, next) {
     try {
       const settings = await AttendanceService.getAttendanceSettings();
       res.status(200).json({
+        message: 'Settings retrieved successfully',
         settings
       });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   }
 
-  // Update Attendance Settings (Admin Only)
-  static async updateSettings(req, res) {
+  // Update attendance window settings (Admin only)
+  static async updateSettings(req, res, next) {
     try {
       if (req.user.role !== 'ADMIN') {
-        return res.status(403).json({ error: 'Unauthorized: Admin access required.' });
+        return res.status(403).json({ error: 'Unauthorized: Admin access required to change settings' });
       }
 
-      const { startTime, endTime } = req.body;
-      if (!startTime || !endTime) {
-        return res.status(400).json({ error: 'Start time and End time are required.' });
-      }
-
+      const { startTime, endTime } = req.validatedData;
       const settings = await AttendanceService.updateAttendanceSettings(startTime, endTime);
       res.status(200).json({
-        message: 'Attendance settings updated successfully!',
+        message: 'Attendance settings updated successfully',
         settings
       });
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      next(error);
     }
   }
 
-  // Get Daily Attendance Registry
-  static async getDailyRegistry(req, res) {
+  // Get daily registry logs (Shared view)
+  static async getRegistry(req, res, next) {
     try {
       const { date } = req.query;
       const registry = await AttendanceService.getDailyRegistry(date);
       res.status(200).json({
+        message: 'Attendance registry retrieved successfully',
+        count: registry.length,
         registry
       });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   }
 }

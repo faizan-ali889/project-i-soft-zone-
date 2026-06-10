@@ -69,7 +69,7 @@ const EmployeeList = () => {
           </h1>
         </div>
         <Button onClick={() => navigate('/create-employee')} variant="primary" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', border: 'none', boxShadow: '0 4px 12px rgba(5, 150, 105, 0.2)' }}>
-          ➕ Add Employee
+          + Add Employee
         </Button>
       </div>
 

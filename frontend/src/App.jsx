@@ -15,8 +15,13 @@ import Reports from './pages/Reports';
 import RoleManagement from './pages/RoleManagement';
 import AttendancePortal from './pages/AttendancePortal';
 import AssetManagement from './pages/AssetManagement';
+import MonitoringDashboard from './pages/MonitoringDashboard';
+import TeamDashboard from './pages/TeamDashboard';
+import TeamDetail from './pages/TeamDetail';
+import TeamCalendar from './pages/TeamCalendar';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
+import SplitLayout from './components/SplitLayout';
 
 function App() {
   return (
@@ -27,112 +32,97 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           
+          {/* Protected Split Workspace Layout */}
           <Route 
-            path="/dashboard" 
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <SplitLayout />
               </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/employees" 
-            element={
-              <ProtectedRoute allowedRoles={['ADMIN']}>
-                <EmployeeList />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/create-employee" 
-            element={
-              <ProtectedRoute allowedRoles={['ADMIN']}>
-                <CreateEmployee />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/edit-employee/:id" 
-            element={
-              <ProtectedRoute allowedRoles={['ADMIN']}>
-                <EditEmployee />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/departments" 
-            element={
-              <ProtectedRoute allowedRoles={['ADMIN']}>
-                <DepartmentMaster />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/skills" 
-            element={
-              <ProtectedRoute allowedRoles={['ADMIN']}>
-                <SkillsMaster />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/profile" 
-            element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* Leave Management Routes */}
-          <Route 
-            path="/leaves" 
-            element={
-              <ProtectedRoute>
-                <LeaveDashboard />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/approvals" 
-            element={
-              <ProtectedRoute allowedRoles={['ADMIN', 'HR', 'MANAGER']}>
-                <LeaveApproval />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/reports" 
-            element={
-              <ProtectedRoute allowedRoles={['ADMIN', 'HR']}>
-                <Reports />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/roles" 
-            element={
-              <ProtectedRoute allowedRoles={['ADMIN']}>
-                <RoleManagement />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/attendance" 
-            element={
-              <ProtectedRoute>
-                <AttendancePortal />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/assets" 
-            element={
-              <ProtectedRoute>
-                <AssetManagement />
-              </ProtectedRoute>
-            } 
-          />
+            }
+          >
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route 
+              path="/employees" 
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <EmployeeList />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/create-employee" 
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <CreateEmployee />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/edit-employee/:id" 
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <EditEmployee />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/departments" 
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <DepartmentMaster />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/skills" 
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <SkillsMaster />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="/profile" element={<Profile />} />
+            
+            {/* Leave Management Routes */}
+            <Route path="/leaves" element={<LeaveDashboard />} />
+            <Route 
+              path="/approvals" 
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN', 'HR', 'MANAGER']}>
+                  <LeaveApproval />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/reports" 
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN', 'HR']}>
+                  <Reports />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/roles" 
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <RoleManagement />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="/attendance" element={<AttendancePortal />} />
+            <Route path="/assets" element={<AssetManagement />} />
+            <Route 
+              path="/monitoring" 
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN']}>
+                  <MonitoringDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route path="/teams" element={<TeamDashboard />} />
+            <Route path="/teams/:id" element={<TeamDetail />} />
+            <Route path="/teams/:id/calendar" element={<TeamCalendar />} />
+          </Route>
         </Routes>
       </Router>
     </AuthProvider>

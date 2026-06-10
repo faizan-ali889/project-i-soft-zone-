@@ -184,4 +184,38 @@ export const assetAPI = {
     apiClient.get('/assets/reports')
 };
 
+// Health & System Monitoring APIs
+export const healthAPI = {
+  getHealth: () =>
+    apiClient.get('/health'),
+  getLogs: (type) =>
+    apiClient.get('/health/logs', { params: { type } })
+};
+
+// Team & Milestone APIs
+export const teamAPI = {
+  getAll: () =>
+    apiClient.get('/teams'),
+  getById: (id) =>
+    apiClient.get(`/teams/${id}`),
+  create: (teamData) =>
+    apiClient.post('/teams', teamData),
+  update: (id, teamData) =>
+    apiClient.put(`/teams/${id}`, teamData),
+  delete: (id) =>
+    apiClient.delete(`/teams/${id}`),
+  addMember: (id, memberData) =>
+    apiClient.post(`/teams/${id}/members`, memberData),
+  removeMember: (id, userId) =>
+    apiClient.delete(`/teams/${id}/members/${userId}`),
+  createJob: (id, jobData) =>
+    apiClient.post(`/teams/${id}/jobs`, jobData),
+  updateJob: (id, jobId, jobData) =>
+    apiClient.put(`/teams/${id}/jobs/${jobId}`, jobData),
+  getLeaderboard: () =>
+    apiClient.get('/teams/leaderboard'),
+  getConflicts: (id) =>
+    apiClient.get(`/teams/${id}/conflicts`)
+};
+
 export default apiClient;

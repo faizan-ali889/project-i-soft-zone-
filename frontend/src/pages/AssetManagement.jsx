@@ -158,10 +158,10 @@ const AssetManagement = () => {
 
   const getAssetIcon = (type) => {
     switch (type) {
-      case 'Laptop': return '💻';
-      case 'Monitor': return '🖥️';
-      case 'ID Card': return '🪪';
-      default: return '📦';
+      case 'Laptop': return 'L';
+      case 'Monitor': return 'M';
+      case 'ID Card': return 'ID';
+      default: return 'A';
     }
   };
 
@@ -189,11 +189,8 @@ const AssetManagement = () => {
         paddingBottom: '1.5rem'
       }}>
         <div>
-          <Button onClick={() => navigate('/dashboard')} variant="secondary">
-            ← Dashboard
-          </Button>
           <h1 style={{
-            margin: '1rem 0 0 0',
+            margin: '0',
             fontSize: '2.2rem',
             fontWeight: '800',
             letterSpacing: '-0.025em',
@@ -209,7 +206,7 @@ const AssetManagement = () => {
         </div>
         {['ADMIN', 'HR'].includes(user?.role) && (
           <Button onClick={() => setIsAddOpen(true)} variant="primary">
-            + Add New Asset 🔌
+            + Add New Asset
           </Button>
         )}
       </div>
@@ -248,7 +245,8 @@ const AssetManagement = () => {
         <>
           {/* Filters Bar */}
           <div style={{
-            backgroundColor: '#ffffff',
+            backgroundColor: 'var(--bg-card)',
+            backdropFilter: 'var(--card-blur)',
             border: '1px solid var(--border-color)',
             borderRadius: '12px',
             padding: '1.25rem',
@@ -272,7 +270,9 @@ const AssetManagement = () => {
                   borderRadius: '8px',
                   border: '1px solid var(--border-color)',
                   outline: 'none',
-                  fontSize: '0.88rem'
+                  fontSize: '0.88rem',
+                  backgroundColor: 'rgba(15, 23, 42, 0.3)',
+                  color: 'var(--text-primary)'
                 }}
               />
               <Button type="submit" variant="primary" style={{ padding: '0.6rem 1.2rem' }}>Search</Button>
@@ -288,7 +288,9 @@ const AssetManagement = () => {
                   border: '1px solid var(--border-color)',
                   outline: 'none',
                   fontSize: '0.85rem',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  backgroundColor: 'rgba(15, 23, 42, 0.3)',
+                  color: 'var(--text-primary)'
                 }}
               >
                 <option value="">All Statuses</option>
@@ -306,13 +308,15 @@ const AssetManagement = () => {
                   border: '1px solid var(--border-color)',
                   outline: 'none',
                   fontSize: '0.85rem',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  backgroundColor: 'rgba(15, 23, 42, 0.3)',
+                  color: 'var(--text-primary)'
                 }}
               >
                 <option value="">All Types</option>
-                <option value="Laptop">Laptop 💻</option>
-                <option value="Monitor">Monitor 🖥️</option>
-                <option value="ID Card">ID Card 🪪</option>
+                <option value="Laptop">Laptop</option>
+                <option value="Monitor">Monitor</option>
+                <option value="ID Card">ID Card</option>
               </select>
 
               <select
@@ -324,7 +328,9 @@ const AssetManagement = () => {
                   border: '1px solid var(--border-color)',
                   outline: 'none',
                   fontSize: '0.85rem',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  backgroundColor: 'rgba(15, 23, 42, 0.3)',
+                  color: 'var(--text-primary)'
                 }}
               >
                 <option value="created_at">Date Added</option>
@@ -339,21 +345,22 @@ const AssetManagement = () => {
                   padding: '0.6rem 1rem',
                   borderRadius: '8px',
                   border: '1px solid var(--border-color)',
-                  backgroundColor: '#ffffff',
+                  backgroundColor: 'rgba(15, 23, 42, 0.3)',
+                  color: 'var(--text-primary)',
                   fontSize: '0.85rem',
                   cursor: 'pointer',
                   fontWeight: '600'
                 }}
               >
-                {sortOrder === 'asc' ? 'Ascending 🔼' : 'Descending 🔽'}
+                {sortOrder === 'asc' ? 'Ascending' : 'Descending'}
               </button>
             </div>
           </div>
 
           {/* Grid of Cards */}
           {assets.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-              <span style={{ fontSize: '2.5rem' }}>📂</span>
+            <div style={{ textAlign: 'center', padding: '3rem', backgroundColor: 'var(--bg-card)', backdropFilter: 'var(--card-blur)', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" /></svg></span>
               <h3 style={{ margin: '1rem 0 0.5rem 0', color: 'var(--text-primary)' }}>No Assets Found</h3>
               <p style={{ margin: '0', color: 'var(--text-secondary)' }}>Try broadening your filter criteria or register a new asset.</p>
             </div>
@@ -366,7 +373,8 @@ const AssetManagement = () => {
             }}>
               {assets.map(asset => (
                 <div key={asset.id} style={{
-                  backgroundColor: '#ffffff',
+                  backgroundColor: 'var(--bg-card)',
+                  backdropFilter: 'var(--card-blur)',
                   border: '1px solid var(--border-color)',
                   borderRadius: '12px',
                   padding: '1.25rem',
@@ -479,8 +487,8 @@ const AssetManagement = () => {
         <>
           <h2 style={{ fontSize: '1.25rem', fontWeight: '700', marginBottom: '1.2rem' }}>My Hardware Allocations</h2>
           {myAllocations.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
-              <span style={{ fontSize: '2.5rem' }}>🔌</span>
+            <div style={{ textAlign: 'center', padding: '3rem', backgroundColor: 'var(--bg-card)', backdropFilter: 'var(--card-blur)', borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: 'var(--shadow-card)' }}>
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2" /><line x1="8" y1="21" x2="16" y2="21" /><line x1="12" y1="17" x2="12" y2="21" /></svg></span>
               <h3 style={{ margin: '1rem 0 0.5rem 0', color: 'var(--text-primary)' }}>No Hardware Allocated</h3>
               <p style={{ margin: '0', color: 'var(--text-secondary)' }}>You currently do not have any company hardware or ID access keys allocated to you.</p>
             </div>
@@ -488,7 +496,8 @@ const AssetManagement = () => {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
               {myAllocations.map(alloc => (
                 <div key={alloc.allocation_id} style={{
-                  backgroundColor: '#ffffff',
+                  backgroundColor: 'var(--bg-card)',
+                  backdropFilter: 'var(--card-blur)',
                   border: '1px solid var(--border-color)',
                   borderRadius: '12px',
                   padding: '1.25rem',
@@ -567,9 +576,9 @@ const AssetManagement = () => {
                 boxSizing: 'border-box'
               }}
             >
-              <option value="Laptop">Laptop 💻</option>
-              <option value="Monitor">Monitor 🖥️</option>
-              <option value="ID Card">ID Card 🪪</option>
+              <option value="Laptop">Laptop</option>
+              <option value="Monitor">Monitor</option>
+              <option value="ID Card">ID Card</option>
             </select>
           </div>
 

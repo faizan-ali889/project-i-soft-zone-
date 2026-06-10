@@ -200,25 +200,25 @@ const Reports = () => {
         <Card 
           title="Total Leave Approved" 
           value={stats ? `${stats.approved_count} Requests` : '0 Requests'}
-          icon="✅"
+          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>}
           color="#10b981"
         />
         <Card 
           title="Total Days Approved" 
           value={stats ? `${stats.total_approved_days || 0} Days` : '0 Days'}
-          icon="📅"
+          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>}
           color="#6366f1"
         />
         <Card 
           title="Pending Reviews" 
           value={stats ? `${stats.pending_count} Requests` : '0 Requests'}
-          icon="⏳"
+          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3h14" /><path d="M5 21h14" /><path d="M12 3v4c0 1.1-.9 2-2 2H8" /><path d="M12 3v4c0 1.1.9 2 2 2h2" /><path d="M12 21v-4c0-1.1-.9-2-2-2H8" /><path d="M12 21v-4c0-1.1.9-2 2-2h2" /></svg>}
           color="#f59e0b"
         />
         <Card 
           title="Most Absent Employee" 
           value={getMostAbsentEmployee()}
-          icon="📊"
+          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="20" x2="12" y2="10" /><line x1="18" y1="20" x2="18" y2="4" /><line x1="6" y1="20" x2="6" y2="16" /></svg>}
           color="#ef4444"
         />
       </div>
@@ -272,7 +272,7 @@ const Reports = () => {
               variant="secondary"
               style={{ fontSize: '0.85rem' }}
             >
-              Export CSV 📥
+              Export CSV
             </Button>
           </div>
           <Table
@@ -326,7 +326,7 @@ const Reports = () => {
               variant="secondary"
               style={{ fontSize: '0.85rem' }}
             >
-              Export CSV 📥
+              Export CSV
             </Button>
           </div>
           <Table
@@ -384,7 +384,7 @@ const Reports = () => {
               variant="secondary"
               style={{ fontSize: '0.85rem' }}
             >
-              Export CSV 📥
+              Export CSV
             </Button>
           </div>
           <Table
@@ -431,7 +431,7 @@ const Reports = () => {
               variant="secondary"
               style={{ fontSize: '0.85rem' }}
             >
-              Export CSV 📥
+              Export CSV
             </Button>
           </div>
           <Table
@@ -499,7 +499,7 @@ const Reports = () => {
               variant="secondary"
               style={{ fontSize: '0.85rem' }}
             >
-              Export CSV 📥
+              Export CSV
             </Button>
           </div>
           <Table

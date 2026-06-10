@@ -1,0 +1,840 @@
+{
+  "info": {
+    "_postman_id": "7d9b5bc7-1111-4444-8888-0123456789ab",
+    "name": "i-SOFTZONE Enterprise API",
+    "description": "Postman collection for i-SOFTZONE's production-ready Employee Leave and Asset Management system, versioned under /api/v1.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@company.com\",\n  \"password\": \"password123\",\n  \"role\": \"EMPLOYEE\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Registers a new user account with default role of EMPLOYEE."
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.token) {",
+                  "        pm.collectionVariables.set(\"token\", jsonData.token);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@company.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Logs in the user and automatically saves the JWT token into the collection's variable."
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/user-profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "user-profile"
+              ]
+            },
+            "description": "Retrieves details of the currently logged in user profile."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Employee Management",
+      "item": [
+        {
+          "name": "Get Employees (Paginated)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/employees?page=1&limit=10&search=&departmentId=&sortBy=name&sortOrder=asc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                },
+                {
+                  "key": "departmentId",
+                  "value": ""
+                },
+                {
+                  "key": "sortBy",
+                  "value": "name"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "asc"
+                }
+              ]
+            },
+            "description": "Retrieves employee lists with support for pagination, sorting, and name/designation/email ILIKE searches."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Employee Profile By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/employees/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees",
+                "1"
+              ]
+            },
+            "description": "Retrieves the single employee profile by database primary key ID."
+          },
+          "response": []
+        },
+        {
+          "name": "Create Employee Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Employee\",\n  \"email\": \"new.emp@company.com\",\n  \"password\": \"password123\",\n  \"role\": \"EMPLOYEE\",\n  \"department_id\": 1,\n  \"phone\": \"+1234567890\",\n  \"address\": \"123 Tech Avenue, Silicon Valley\",\n  \"designation\": \"Software Engineer\",\n  \"salary\": 85000,\n  \"skills\": [1, 2]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employees",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees"
+              ]
+            },
+            "description": "Creates both the auth user account and the accompanying details in the profiles database table (Admin/HR only)."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Employee Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"department_id\": 1,\n  \"phone\": \"+1987654321\",\n  \"address\": \"456 Innovation Park, San Francisco\",\n  \"designation\": \"Senior Engineer\",\n  \"salary\": 98000,\n  \"skills\": [1, 2, 3]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/employees/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees",
+                "1"
+              ]
+            },
+            "description": "Updates employee department, contact info, status, salary, and list of skills (Admin/HR only)."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Employee",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/employees/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "employees",
+                "1"
+              ]
+            },
+            "description": "Deletes the employee and related user account from database (Admin only)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Leave Management",
+      "item": [
+        {
+          "name": "Apply for Leave",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leaveTypeId\": 1,\n  \"fromDate\": \"2026-07-01\",\n  \"toDate\": \"2026-07-05\",\n  \"reason\": \"Applying for annual family vacation\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leaves/apply",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leaves",
+                "apply"
+              ]
+            },
+            "description": "Applies for a leave request. Enforces logical from/to dates and enough remaining balance."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Leave History",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leaves/my-leaves",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leaves",
+                "my-leaves"
+              ]
+            },
+            "description": "Gets the leave requests submitted by the logged in user."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Leave Balance",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leaves/balance",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leaves",
+                "balance"
+              ]
+            },
+            "description": "Retrieves the breakdown of remaining leave credits for each leave category type."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Leave Types",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leaves/types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leaves",
+                "types"
+              ]
+            },
+            "description": "Retrieves lists of available leave categories."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Pending Leaves",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leaves/pending",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leaves",
+                "pending"
+              ]
+            },
+            "description": "Retrieves leaves with state 'PENDING' that the reviewer has authority to approve."
+          },
+          "response": []
+        },
+        {
+          "name": "Approve Leave",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"Approved. Enjoy your vacation!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leaves/1/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leaves",
+                "1",
+                "approve"
+              ]
+            },
+            "description": "Approves a pending leave request (Admin/HR/Manager only)."
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Leave",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"Rejected due to project release schedule.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leaves/1/reject",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leaves",
+                "1",
+                "reject"
+              ]
+            },
+            "description": "Rejects a pending leave request. Requires a reason in remarks (Admin/HR/Manager only)."
+          },
+          "response": []
+        },
+        {
+          "name": "Leave Summary Reports View",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leaves/admin/reports",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "leaves",
+                "admin",
+                "reports"
+              ]
+            },
+            "description": "Fetches database reports derived from the `leave_summary_view` (Admin/HR only)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Asset Management",
+      "item": [
+        {
+          "name": "Get Assets List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/assets?page=1&limit=10&search=&status=&sortBy=asset_name&sortOrder=asc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "assets"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "search",
+                  "value": ""
+                },
+                {
+                  "key": "status",
+                  "value": ""
+                },
+                {
+                  "key": "sortBy",
+                  "value": "asset_name"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "asc"
+                }
+              ]
+            },
+            "description": "Lists corporate assets with support for pagination, search parameters, status filtering, and sorting parameters."
+          },
+          "response": []
+        },
+        {
+          "name": "Create New Asset",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assetName\": \"MacBook Pro 16-inch M3\",\n  \"assetType\": \"Laptop\",\n  \"serialNumber\": \"C02FP12345AB\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/assets",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "assets"
+              ]
+            },
+            "description": "Creates a new cataloged asset (Admin/HR only)."
+          },
+          "response": []
+        },
+        {
+          "name": "Allocate Asset",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assetId\": 1,\n  \"employeeId\": 1,\n  \"remarks\": \"Allocated for project development\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/assets/allocate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "assets",
+                "allocate"
+              ]
+            },
+            "description": "Assigns an asset to an employee profile. Checks that the asset is currently available (Admin/HR only)."
+          },
+          "response": []
+        },
+        {
+          "name": "Return Asset",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"allocationId\": 1,\n  \"remarks\": \"Returned in good condition\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/assets/return",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "assets",
+                "return"
+              ]
+            },
+            "description": "Processes the return of an allocated asset, marking it back as available (Admin/HR only)."
+          },
+          "response": []
+        },
+        {
+          "name": "My Allocated Assets",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/assets/my-allocations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "assets",
+                "my-allocations"
+              ]
+            },
+            "description": "Retrieves the assets allocated to the logged-in user."
+          },
+          "response": []
+        },
+        {
+          "name": "Asset Allocation Reports View",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/assets/reports",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "assets",
+                "reports"
+              ]
+            },
+            "description": "Retrieves global list of allocations from `asset_summary_view` (Admin/HR only)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "System Monitor",
+      "item": [
+        {
+          "name": "Health Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Gets database status, Node RAM usage, process uptime, failed logins count, and global API request totals."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

@@ -108,7 +108,7 @@ const Profile = () => {
           variant="danger"
           style={{ width: '100%', padding: '0.8rem' }}
         >
-          Logout 🚪
+          Logout
         </Button>
       </div>
     </div>

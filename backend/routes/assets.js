@@ -1,3 +1,4 @@
+// Asset Routes
 const express = require('express');
 const router = express.Router();
 const AssetController = require('../controllers/assetController');
@@ -6,7 +7,7 @@ const {
   validateAsset,
   validateAssetAllocation,
   validateAssetReturn
-} = require('../utils/validation');
+} = require('../validators/asset.validator');
 
 // Apply authentication middleware to all asset routes
 router.use(authMiddleware);

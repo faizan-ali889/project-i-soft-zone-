@@ -94,11 +94,8 @@ const SkillsMaster = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1.5rem' }}>
         <div>
-          <Button onClick={() => navigate('/dashboard')} variant="secondary">
-            ← Dashboard
-          </Button>
           <h1 style={{ 
-            margin: '1rem 0 0 0', 
+            margin: '0', 
             fontSize: '2.2rem', 
             fontWeight: '800',
             letterSpacing: '-0.025em',

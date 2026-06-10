@@ -1,0 +1,26 @@
+// Global Application Constants
+
+const ROLES = {
+  ADMIN: 'ADMIN',
+  HR: 'HR',
+  MANAGER: 'MANAGER',
+  EMPLOYEE: 'EMPLOYEE'
+};
+
+const LEAVE_STATUS = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED'
+};
+
+const ASSET_STATUS = {
+  AVAILABLE: 'AVAILABLE',
+  ALLOCATED: 'ALLOCATED',
+  MAINTENANCE: 'MAINTENANCE'
+};
+
+module.exports = {
+  ROLES,
+  LEAVE_STATUS,
+  ASSET_STATUS
+};

@@ -114,10 +114,10 @@ const LeaveDashboard = () => {
   };
 
   const getLeaveIcon = (name) => {
-    if (name.includes('Sick')) return '🤒';
-    if (name.includes('Casual')) return '🏖️';
-    if (name.includes('Earned')) return '💼';
-    return '📅';
+    if (name.includes('Sick')) return 'S';
+    if (name.includes('Casual')) return 'C';
+    if (name.includes('Earned')) return 'E';
+    return 'L';
   };
 
   if (loading) return <Loader message="Loading Leave Records..." fullScreen />;
@@ -151,7 +151,7 @@ const LeaveDashboard = () => {
           </h1>
         </div>
         <Button onClick={() => setIsApplyOpen(true)} variant="primary">
-          Apply For Leave 📝
+          Apply For Leave
         </Button>
       </div>
 

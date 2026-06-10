@@ -1,3 +1,4 @@
+// Leave Routes
 const express = require('express');
 const router = express.Router();
 const LeaveController = require('../controllers/leaveController');
@@ -6,54 +7,45 @@ const {
   validateLeaveApplication,
   validateApproval,
   validateRejection
-} = require('../utils/validation');
+} = require('../validators/leave.validator');
 
-// All routes require authentication
+// Apply authentication middleware to all leave routes
 router.use(authMiddleware);
 
-// ========== EMPLOYEE ROUTES ==========
-// Apply for leave
+// Apply for leave (User)
 router.post('/apply', validateLeaveApplication, LeaveController.applyLeave);
 
-// Get my leave applications
+// Get logged in user's leave application history
 router.get('/my-leaves', LeaveController.getMyLeaves);
 
-// Get my leave balance
+// Get logged in user's leave balance levels
 router.get('/balance', LeaveController.getLeaveBalance);
 
-// Get leave types
+// Get list of leave types
 router.get('/types', LeaveController.getLeaveTypes);
 
-// Get my notifications
-router.get('/notifications', LeaveController.getNotifications);
-
-// Mark notification as read
-router.put('/notifications/:notificationId/read', LeaveController.markNotificationRead);
-
-// ========== MANAGER/HR ROUTES ==========
-// Get pending leaves (for approval)
+// Get pending applications for review (Admin/HR/Manager)
 router.get('/pending', LeaveController.getPendingLeaves);
 
-// Approve leave
-router.put('/:leaveId/approve', validateApproval, LeaveController.approveLeave);
+// Approve leave (Admin/HR/Manager, with validate)
+router.put('/:id/approve', validateApproval, LeaveController.approveLeave);
 
-// Reject leave
-router.put('/:leaveId/reject', validateRejection, LeaveController.rejectLeave);
+// Reject leave (Admin/HR/Manager, with validate)
+router.put('/:id/reject', validateRejection, LeaveController.rejectLeave);
 
-// Get approval history for a leave
-router.get('/:leaveId/approval-history', LeaveController.getApprovalHistory);
+// Get approval history logs
+router.get('/:id/approval-history', LeaveController.getApprovalHistory);
 
-// ========== ADMIN ROUTES ==========
-// Get audit logs
-router.get('/admin/audit-logs', LeaveController.getAuditLogs);
-
-// Get leave statistics
-router.get('/admin/statistics', LeaveController.getLeaveStats);
-
-// Get leave reports
+// Retrieve complete leaves report from view (Admin/HR only)
 router.get('/admin/reports', LeaveController.getLeaveReports);
 
-// Get advanced SQL analytics reports
+// Retrieve advanced SQL analytical reports (Admin/HR only)
 router.get('/admin/advanced-reports', LeaveController.getAdvancedReports);
+
+// Get leave logs audit trail (Admin/HR only)
+router.get('/admin/audit-logs', LeaveController.getAuditLogs);
+
+// Get leave statistics (Admin/HR/Manager)
+router.get('/admin/statistics', LeaveController.getLeaveStats);
 
 module.exports = router;

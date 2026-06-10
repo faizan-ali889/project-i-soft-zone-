@@ -10,6 +10,10 @@ const setupCompleteDatabase = async () => {
     await db.query(`
       DROP VIEW IF EXISTS leave_reports CASCADE;
       DROP VIEW IF EXISTS asset_reports CASCADE;
+      DROP VIEW IF EXISTS team_performance_view CASCADE;
+      DROP TABLE IF EXISTS team_jobs CASCADE;
+      DROP TABLE IF EXISTS team_members CASCADE;
+      DROP TABLE IF EXISTS teams CASCADE;
       DROP TABLE IF EXISTS notifications CASCADE;
       DROP TABLE IF EXISTS audit_logs CASCADE;
       DROP TABLE IF EXISTS approval_history CASCADE;
@@ -434,6 +438,159 @@ const setupCompleteDatabase = async () => {
       LEFT JOIN users ab ON aa.allocated_by = ab.id;
     `);
     console.log('✅ Created: View asset_reports');
+
+    // 15. Create View: employee_dashboard_view
+    await db.query(`
+      CREATE OR REPLACE VIEW employee_dashboard_view AS
+      SELECT 
+        u.id as user_id,
+        u.name as employee_name,
+        u.email,
+        u.role,
+        ep.designation,
+        d.department_name,
+        ep.is_active,
+        ep.date_of_joining
+      FROM users u
+      LEFT JOIN employee_profiles ep ON u.id = ep.user_id
+      LEFT JOIN departments d ON ep.department_id = d.id;
+    `);
+    console.log('✅ Created: View employee_dashboard_view');
+
+    // 16. Create View: leave_summary_view
+    await db.query(`
+      CREATE OR REPLACE VIEW leave_summary_view AS
+      SELECT 
+        u.id as employee_id,
+        u.name as employee_name,
+        COUNT(la.id) as total_leaves_applied,
+        COUNT(CASE WHEN la.status = 'APPROVED' THEN 1 END) as total_approved,
+        COUNT(CASE WHEN la.status = 'REJECTED' THEN 1 END) as total_rejected,
+        COUNT(CASE WHEN la.status = 'PENDING' THEN 1 END) as total_pending
+      FROM users u
+      LEFT JOIN leave_applications la ON u.id = la.employee_id
+      GROUP BY u.id, u.name;
+    `);
+    console.log('✅ Created: View leave_summary_view');
+
+    // 17. Create View: asset_summary_view
+    await db.query(`
+      CREATE OR REPLACE VIEW asset_summary_view AS
+      SELECT 
+        a.id as asset_id,
+        a.asset_name,
+        a.asset_type,
+        a.serial_number,
+        a.status as asset_status,
+        u.name as allocated_to
+      FROM assets a
+      LEFT JOIN asset_allocations aa ON a.id = aa.asset_id AND aa.status = 'ALLOCATED'
+      LEFT JOIN users u ON aa.employee_id = u.id;
+    `);
+    // Create new tables: teams, team_members, team_jobs
+    console.log('🔧 Creating Team Management tables...');
+    
+    await db.query(`
+      CREATE TABLE teams (
+        id SERIAL PRIMARY KEY,
+        team_name VARCHAR(100) NOT NULL UNIQUE,
+        description TEXT,
+        team_lead_id INT REFERENCES users(id) ON DELETE SET NULL,
+        deadline DATE,
+        status VARCHAR(50) DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'COMPLETED', 'ON_HOLD')),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log('✅ Created: teams');
+
+    await db.query(`
+      CREATE TABLE team_members (
+        id SERIAL PRIMARY KEY,
+        team_id INT NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+        user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        team_role VARCHAR(100) NOT NULL DEFAULT 'Developer',
+        assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(team_id, user_id)
+      );
+    `);
+    console.log('✅ Created: team_members');
+
+    await db.query(`
+      CREATE TABLE team_jobs (
+        id SERIAL PRIMARY KEY,
+        team_id INT NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+        job_title VARCHAR(255) NOT NULL,
+        description TEXT,
+        assigned_to INT REFERENCES users(id) ON DELETE SET NULL,
+        deadline DATE,
+        status VARCHAR(50) DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'IN_PROGRESS', 'COMPLETED')),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log('✅ Created: team_jobs');
+
+    // Create Leaderboard View: team_performance_view
+    await db.query(`
+      CREATE OR REPLACE VIEW team_performance_view AS
+      SELECT 
+        t.id as team_id,
+        t.team_name,
+        u.name as team_lead_name,
+        t.deadline as team_deadline,
+        t.status as team_status,
+        COUNT(tj.id) as total_jobs,
+        COUNT(CASE WHEN tj.status = 'COMPLETED' THEN 1 END) as completed_jobs,
+        CASE 
+          WHEN COUNT(tj.id) > 0 THEN ROUND((COUNT(CASE WHEN tj.status = 'COMPLETED' THEN 1 END)::NUMERIC / COUNT(tj.id)::NUMERIC) * 100, 2)
+          ELSE 0 
+        END as completion_rate,
+        (SELECT COUNT(*) FROM team_members tm WHERE tm.team_id = t.id) as total_members
+      FROM teams t
+      LEFT JOIN users u ON t.team_lead_id = u.id
+      LEFT JOIN team_jobs tj ON t.id = tj.team_id
+      GROUP BY t.id, t.team_name, u.name, t.deadline, t.status;
+    `);
+    console.log('✅ Created: View team_performance_view');
+
+    // Seeding Teams
+    console.log('🌱 Seeding initial Teams and Tasks...');
+    const t1Res = await db.query(`
+      INSERT INTO teams (team_name, description, team_lead_id, deadline)
+      VALUES ('Core Platform API', 'Core API Services and Endpoint optimization', $1, CURRENT_DATE + 30)
+      RETURNING id
+    `, [managerId]);
+    const t1Id = t1Res.rows[0].id;
+
+    const t2Res = await db.query(`
+      INSERT INTO teams (team_name, description, team_lead_id, deadline)
+      VALUES ('Security Audit Team', 'CORS configurations, logging checks, and security audits', $1, CURRENT_DATE + 15)
+      RETURNING id
+    `, [adminId]);
+    const t2Id = t2Res.rows[0].id;
+
+    // Seeding Members
+    await db.query(`
+      INSERT INTO team_members (team_id, user_id, team_role)
+      VALUES 
+        ($1, $3, 'Lead Backend Developer'),
+        ($1, $4, 'Associate Developer'),
+        ($2, $5, 'Lead Auditor'),
+        ($2, $4, 'Security Evaluator')
+    `, [t1Id, t2Id, managerId, employeeId, adminId]);
+
+    // Seeding Jobs
+    await db.query(`
+      INSERT INTO team_jobs (team_id, job_title, description, assigned_to, deadline, status)
+      VALUES 
+        ($1, 'Optimize Postgres connection Pool', 'Configure db.js pool to reuse active clients', $3, CURRENT_DATE + 5, 'COMPLETED'),
+        ($1, 'Implement Joi validation rules', 'Write Joi validators for all create/update endpoints', $3, CURRENT_DATE + 12, 'IN_PROGRESS'),
+        ($2, 'Verify CORS origin headers', 'Validate access permissions across custom Brave headers', $4, CURRENT_DATE + 3, 'COMPLETED'),
+        ($2, 'Setup automated email templates', 'Draft welcome, asset, and leave status triggers', $5, CURRENT_DATE + 10, 'PENDING')
+    `, [t1Id, t2Id, employeeId, adminId, managerId]);
+
+    console.log('✅ Seeded: Teams, Members, and Jobs');
 
     console.log('\n🎉 Unified Database Setup Complete!');
     process.exit(0);

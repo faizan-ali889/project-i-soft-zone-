@@ -19,7 +19,13 @@ const AttendancePortal = () => {
   // Timer and state
   const [timerText, setTimerText] = useState('00:00:00');
   const [windowState, setWindowState] = useState('CLOSED'); // 'UPCOMING', 'OPEN', 'CLOSED'
-  const [filterDate, setFilterDate] = useState(new Date().toISOString().split('T')[0]);
+  const [filterDate, setFilterDate] = useState(() => {
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = String(today.getMonth() + 1).padStart(2, '0');
+    const d = String(today.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  });
 
   // Admin settings form state
   const [adminForm, setAdminForm] = useState({
@@ -214,11 +220,8 @@ const AttendancePortal = () => {
         paddingBottom: '1.5rem'
       }}>
         <div>
-          <Button onClick={() => navigate('/dashboard')} variant="secondary">
-            ← Dashboard
-          </Button>
           <h1 style={{ 
-            margin: '1rem 0 0 0', 
+            margin: '0', 
             fontSize: '2.2rem', 
             fontWeight: '800',
             letterSpacing: '-0.025em',
@@ -293,7 +296,7 @@ const AttendancePortal = () => {
               border: '1px solid rgba(16, 185, 129, 0.2)'
             }}>
               <p style={{ margin: '0', fontSize: '1.25rem', color: '#10b981', fontWeight: '700' }}>
-                🟢 Marked Present
+                Marked Present
               </p>
               <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                 Logged at: {new Date(todayRecord.check_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
@@ -320,7 +323,7 @@ const AttendancePortal = () => {
                       boxShadow: '0 4px 12px rgba(5, 150, 105, 0.25)'
                     }}
                   >
-                    Mark Present 👍
+                    Mark Present
                   </Button>
                 </div>
               ) : windowState === 'UPCOMING' ? (
@@ -338,7 +341,7 @@ const AttendancePortal = () => {
                     The attendance period for today has ended.
                   </p>
                   <Button disabled variant="danger" style={{ padding: '1rem 2.5rem', fontSize: '1.1rem', cursor: 'not-allowed' }}>
-                    Window Closed 🔒
+                    Window Closed
                   </Button>
                 </div>
               )}
@@ -407,7 +410,7 @@ const AttendancePortal = () => {
             alignItems: 'center', 
             gap: '0.5rem' 
           }}>
-            ⚙️ Configure Attendance Window (Admin Only)
+            Configure Attendance Window (Admin Only)
           </h2>
           
           <form onSubmit={handleAdminSubmit} style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>

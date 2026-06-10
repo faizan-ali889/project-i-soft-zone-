@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import logo from '../assets/logo.png';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -55,6 +56,7 @@ const Login = () => {
           boxSizing: 'border-box'
         }}
       >
+        <img src={logo} alt="i-SOFTZONE Logo" style={{ height: '60px', marginBottom: '1.5rem', objectFit: 'contain' }} />
         <h2 style={{ 
           marginBottom: '0.5rem', 
           fontWeight: '800', 

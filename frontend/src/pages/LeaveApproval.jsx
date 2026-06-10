@@ -165,14 +165,14 @@ const LeaveApproval = () => {
                 variant="success" 
                 style={{ padding: '0.4rem 0.8rem', fontSize: '0.82rem' }}
               >
-                Approve ✓
+                Approve
               </Button>
               <Button 
                 onClick={() => handleOpenActionModal('reject', leave.id)} 
                 variant="danger" 
                 style={{ padding: '0.4rem 0.8rem', fontSize: '0.82rem' }}
               >
-                Reject ✗
+                Reject
               </Button>
             </td>
           </>
