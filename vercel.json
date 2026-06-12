@@ -1,36 +1,9 @@
 {
-  "version": 2,
-  "outputDirectory": "dist",
+  "cleanUrls": true,
   "rewrites": [
     {
-      "source": "/api/test",
-      "destination": "/api/test.js"
-    },
-    {
-      "source": "/api/:path*",
-      "destination": "/api/index.js"
-    },
-    {
-      "source": "/uploads/:path*",
-      "destination": "/api/index.js"
-    },
-    {
-      "source": "/api-docs/:path*",
-      "destination": "/api/index.js"
-    }
-  ],
-  "crons": [
-    {
-      "path": "/api/cron/leave-report",
-      "schedule": "0 20 * * *"
-    },
-    {
-      "path": "/api/cron/db-backup",
-      "schedule": "0 2 * * *"
-    },
-    {
-      "path": "/api/cron/notification-cleanup",
-      "schedule": "0 3 * * *"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
