@@ -32,6 +32,6 @@ module.exports = (err, req, res, next) => {
   // Production or Staging mode
   return res.status(err.statusCode).json({
     status: err.status,
-    message: err.isOperational ? err.message : 'Something went wrong on the server'
+    message: err.message
   });
 };
