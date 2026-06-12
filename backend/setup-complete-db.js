@@ -11,6 +11,9 @@ const setupCompleteDatabase = async () => {
       DROP VIEW IF EXISTS leave_reports CASCADE;
       DROP VIEW IF EXISTS asset_reports CASCADE;
       DROP VIEW IF EXISTS team_performance_view CASCADE;
+      DROP TABLE IF EXISTS team_repo_commits CASCADE;
+      DROP TABLE IF EXISTS team_repositories CASCADE;
+      DROP TABLE IF EXISTS team_scrum_reports CASCADE;
       DROP TABLE IF EXISTS team_jobs CASCADE;
       DROP TABLE IF EXISTS team_members CASCADE;
       DROP TABLE IF EXISTS teams CASCADE;
@@ -21,6 +24,7 @@ const setupCompleteDatabase = async () => {
       DROP TABLE IF EXISTS employee_leave_balance CASCADE;
       DROP TABLE IF EXISTS leave_types CASCADE;
       DROP TABLE IF EXISTS employee_images CASCADE;
+      DROP TABLE IF EXISTS employee_documents CASCADE;
       DROP TABLE IF EXISTS employee_skills CASCADE;
       DROP TABLE IF EXISTS skills CASCADE;
       DROP TABLE IF EXISTS asset_allocations CASCADE;
@@ -111,6 +115,19 @@ const setupCompleteDatabase = async () => {
       );
     `);
     console.log('✅ Created: employee_images');
+
+    // 6.5. EMPLOYEE DOCUMENTS
+    await db.query(`
+      CREATE TABLE employee_documents (
+        id SERIAL PRIMARY KEY,
+        employee_id INT NOT NULL REFERENCES employee_profiles(id) ON DELETE CASCADE,
+        document_name VARCHAR(255) NOT NULL,
+        file_path VARCHAR(255) NOT NULL,
+        document_type VARCHAR(100) DEFAULT 'General',
+        uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log('✅ Created: employee_documents');
 
     // 7. LEAVE TYPES
     await db.query(`

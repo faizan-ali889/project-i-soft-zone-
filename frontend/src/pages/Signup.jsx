@@ -7,6 +7,7 @@ const Signup = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -186,34 +187,60 @@ const Signup = () => {
           }}>
             Password
           </label>
-          <input 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            required 
-            disabled={loading}
-            placeholder="••••••••"
-            style={{ 
-              width: '100%', 
-              padding: '0.75rem 1rem', 
-              borderRadius: '8px', 
-              border: '1px solid var(--border-color)', 
-              backgroundColor: '#ffffff', 
-              color: 'var(--text-primary)', 
-              fontSize: '0.95rem',
-              boxSizing: 'border-box',
-              outline: 'none',
-              transition: 'var(--transition-smooth)'
-            }}
-            onFocus={(e) => {
-              e.target.style.borderColor = 'var(--accent-primary)';
-              e.target.style.boxShadow = '0 0 0 3px rgba(79, 70, 229, 0.1)';
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = 'var(--border-color)';
-              e.target.style.boxShadow = 'none';
-            }}
-          />
+          <div style={{ position: 'relative' }}>
+            <input 
+              type={showPassword ? 'text' : 'password'} 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              required 
+              disabled={loading}
+              placeholder="••••••••"
+              style={{ 
+                width: '100%', 
+                padding: '0.75rem 3rem 0.75rem 1rem', 
+                borderRadius: '8px', 
+                border: '1px solid var(--border-color)', 
+                backgroundColor: '#ffffff', 
+                color: 'var(--text-primary)', 
+                fontSize: '0.95rem',
+                boxSizing: 'border-box',
+                outline: 'none',
+                transition: 'var(--transition-smooth)'
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = 'var(--accent-primary)';
+                e.target.style.boxShadow = '0 0 0 3px rgba(79, 70, 229, 0.1)';
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = 'var(--border-color)';
+                e.target.style.boxShadow = 'none';
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              style={{
+                position: 'absolute',
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--text-secondary)',
+                fontSize: '0.8rem',
+                fontWeight: '600',
+                outline: 'none',
+                userSelect: 'none',
+                padding: '4px',
+                transition: 'var(--transition-smooth)'
+              }}
+              onMouseEnter={(e) => e.target.style.color = 'var(--accent-primary)'}
+              onMouseLeave={(e) => e.target.style.color = 'var(--text-secondary)'}
+            >
+              {showPassword ? 'Hide' : 'Show'}
+            </button>
+          </div>
         </div>
 
         <button 

@@ -96,25 +96,27 @@ const ContextPanel = () => {
       </div>
       
       {[
-        { name: 'Project Project', progress: 60, avatars: ['JD', 'EM', 'TL'] },
-        { name: 'Project Customer', progress: 40, avatars: ['TL', 'AM'] },
-        { name: 'Departmeny Project', progress: 85, avatars: ['JD', 'EM', 'RR'] },
-        { name: 'Project in Project', progress: 20, avatars: ['AM', 'RR'] }
+        { id: 1, name: 'Core Platform API', progress: 33, avatars: ['LM', 'AS', 'BJ', 'FT'] },
+        { id: 2, name: 'Security Audit Team', progress: 50, avatars: ['AU', 'FT', 'BJ'] },
+        { id: 3, name: 'Frontend UI & Portal', progress: 33, avatars: ['JR', 'AS', 'CB', 'EW'] },
+        { id: 4, name: 'Cloud Infra & DevOps', progress: 33, avatars: ['FT', 'DM', 'HE'] }
       ].map((proj, idx) => (
-        <div key={idx} style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.35rem',
-          padding: '0.6rem 0.75rem',
-          borderRadius: '8px',
-          backgroundColor: 'rgba(30, 41, 59, 0.25)',
-          border: '1px solid rgba(148, 163, 184, 0.05)',
-          marginBottom: '0.5rem',
-          cursor: 'pointer',
-          transition: 'all 0.2s ease'
-        }}
-        onMouseEnter={(e) => e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.2)'}
-        onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(148, 163, 184, 0.05)'}
+        <div key={idx} 
+          onClick={() => navigate(`/teams/${proj.id}`)}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.35rem',
+            padding: '0.6rem 0.75rem',
+            borderRadius: '8px',
+            backgroundColor: 'rgba(30, 41, 59, 0.25)',
+            border: '1px solid rgba(148, 163, 184, 0.05)',
+            marginBottom: '0.5rem',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.2)'}
+          onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgba(148, 163, 184, 0.05)'}
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#e2e8f0' }}>{proj.name}</span>
@@ -126,7 +128,7 @@ const ContextPanel = () => {
               <div style={{ width: `${proj.progress}%`, height: '100%', background: 'linear-gradient(90deg, #6366f1 0%, #3b82f6 100%)', borderRadius: '2px' }} />
             </div>
             {/* Overlapping Avatars */}
-            <div style={{ display: 'flex', alignItems: 'center', position: 'relative', height: '18px', width: '38px', flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', position: 'relative', height: '18px', width: '48px', flexShrink: 0 }}>
               {proj.avatars.map((av, avIdx) => (
                 <div
                   key={avIdx}

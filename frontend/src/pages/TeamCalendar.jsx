@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { teamAPI } from '../services/api';
+import { teamAPI, SERVER_URL } from '../services/api';
 import Button from '../components/Button';
 import Loader from '../components/Loader';
 
@@ -44,7 +44,7 @@ const TeamCalendar = () => {
                 return teamAPI.getConflicts(id).then(conflictsRes => {
                   // Standard request to events
                   return teamAPI.getById(id).then(async () => {
-                    const res = await fetch(`http://localhost:5000/api/v1/teams/${id}/calendar-events`, {
+                    const res = await fetch(`${SERVER_URL}/api/v1/teams/${id}/calendar-events`, {
                       headers: { 'Authorization': localStorage.getItem('token') || '' }
                     });
                     return res.json();
@@ -241,7 +241,8 @@ const TeamCalendar = () => {
         {/* Left Side: Calendar Grid */}
         <div style={{
           flex: '2 2 600px',
-          backgroundColor: '#ffffff',
+          background: 'var(--bg-card)',
+          backdropFilter: 'var(--card-blur)',
           border: '1px solid var(--border-color)',
           borderRadius: '16px',
           padding: '1.5rem',
@@ -256,13 +257,13 @@ const TeamCalendar = () => {
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button 
                 onClick={handlePrevMonth} 
-                style={{ padding: '0.4rem 0.8rem', border: '1px solid var(--border-color)', borderRadius: '8px', backgroundColor: '#ffffff', cursor: 'pointer', fontWeight: '600' }}
+                style={{ padding: '0.4rem 0.8rem', border: '1px solid var(--border-color)', borderRadius: '8px', backgroundColor: 'rgba(30, 41, 59, 0.4)', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: '600' }}
               >
                 ◀ Prev
               </button>
               <button 
                 onClick={handleNextMonth} 
-                style={{ padding: '0.4rem 0.8rem', border: '1px solid var(--border-color)', borderRadius: '8px', backgroundColor: '#ffffff', cursor: 'pointer', fontWeight: '600' }}
+                style={{ padding: '0.4rem 0.8rem', border: '1px solid var(--border-color)', borderRadius: '8px', backgroundColor: 'rgba(30, 41, 59, 0.4)', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: '600' }}
               >
                 Next ▶
               </button>
@@ -303,7 +304,7 @@ const TeamCalendar = () => {
           }}>
             {calendarCells.map((day, cellIdx) => {
               if (day === null) {
-                return <div key={`empty-${cellIdx}`} style={{ backgroundColor: '#f8fafc' }} />;
+                return <div key={`empty-${cellIdx}`} style={{ backgroundColor: 'rgba(30, 41, 59, 0.2)' }} />;
               }
 
               const cellInfo = getEventsForDay(day);
@@ -318,7 +319,7 @@ const TeamCalendar = () => {
                   key={`day-${day}`}
                   onClick={() => setSelectedDayEvents(cellInfo)}
                   style={{
-                    backgroundColor: isSelected ? 'rgba(79, 70, 229, 0.03)' : '#ffffff',
+                    backgroundColor: isSelected ? 'rgba(79, 70, 229, 0.08)' : 'rgba(30, 41, 59, 0.45)',
                     padding: '0.5rem',
                     cursor: 'pointer',
                     display: 'flex',
@@ -394,7 +395,8 @@ const TeamCalendar = () => {
         {/* Right Side: Event Inspector Detail */}
         <div style={{
           flex: '1 1 320px',
-          backgroundColor: '#ffffff',
+          background: 'var(--bg-card)',
+          backdropFilter: 'var(--card-blur)',
           border: '1px solid var(--border-color)',
           borderRadius: '16px',
           padding: '1.5rem',

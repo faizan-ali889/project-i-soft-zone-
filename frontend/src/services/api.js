@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+export const SERVER_URL = import.meta.env.PROD ? '' : 'http://localhost:5000';
+const API_BASE_URL = `${SERVER_URL}/api`;
 
 // Create axios instance with common config
 const apiClient = axios.create({
@@ -103,7 +104,23 @@ export const employeeAPI = {
         'Content-Type': 'multipart/form-data'
       }
     });
-  }
+  },
+
+  uploadDocuments: (id, files, documentType) => {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('documents', file);
+    });
+    formData.append('documentType', documentType || 'General');
+    return apiClient.post(`/employees/${id}/documents`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+  },
+
+  deleteDocument: (id, docId) =>
+    apiClient.delete(`/employees/${id}/documents/${docId}`)
 };
 
 // Leave APIs
@@ -215,7 +232,23 @@ export const teamAPI = {
   getLeaderboard: () =>
     apiClient.get('/teams/leaderboard'),
   getConflicts: (id) =>
-    apiClient.get(`/teams/${id}/conflicts`)
+    apiClient.get(`/teams/${id}/conflicts`),
+  getScrumReports: (id) =>
+    apiClient.get(`/teams/${id}/scrum-reports`),
+  createScrumReport: (id, formData) =>
+    apiClient.post(`/teams/${id}/scrum-reports`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }),
+  getRepositories: (id) =>
+    apiClient.get(`/teams/${id}/repositories`),
+  createRepository: (id, repoData) =>
+    apiClient.post(`/teams/${id}/repositories`, repoData),
+  getCommits: (id, repoId) =>
+    apiClient.get(`/teams/${id}/repositories/${repoId}/commits`),
+  createCommit: (id, repoId, commitData) =>
+    apiClient.post(`/teams/${id}/repositories/${repoId}/commits`, commitData)
 };
 
 export default apiClient;

@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./config/swagger');
+const path = require('path');
 
 // Load environment configuration first
 require('./config/env');
@@ -24,6 +25,7 @@ const attendanceRoutes = require('./routes/attendance');
 const assetRoutes = require('./routes/assets');
 const healthRoutes = require('./routes/health');
 const teamRoutes = require('./routes/teams');
+const cronRoutes = require('./routes/cron');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -50,6 +52,10 @@ app.use(cors({
 // Request body parsers
 app.use(express.json());
 
+// Serve uploads directory statically (supports Vercel /tmp)
+const uploadBase = (process.env.NODE_ENV === 'production' || process.env.VERCEL) ? require('os').tmpdir() : __dirname;
+app.use('/uploads', express.static(path.join(uploadBase, 'uploads')));
+
 // Log incoming API Requests
 app.use(loggerMiddleware);
 
@@ -64,6 +70,7 @@ apiV1Router.use('/attendance', attendanceRoutes);
 apiV1Router.use('/assets', assetRoutes);
 apiV1Router.use('/health', healthRoutes);
 apiV1Router.use('/teams', teamRoutes);
+apiV1Router.use('/cron', cronRoutes);
 
 // Mount versioned API routes
 app.use('/api/v1', apiV1Router);
@@ -88,8 +95,60 @@ if (process.env.NODE_ENV !== 'test') {
     logger.info(`Server running on port ${port} in ${process.env.NODE_ENV || 'development'} mode`);
     logger.info(`API Documentation available at http://localhost:${port}/api-docs`);
     
-    // Initialize background jobs
-    CronJobs.init();
+    // Initialize background jobs only in non-production environments
+    if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+      CronJobs.init();
+    }
+
+    // Ensure required tables exist
+    const db = require('./config/db');
+    db.query(`
+      CREATE TABLE IF NOT EXISTS employee_documents (
+        id SERIAL PRIMARY KEY,
+        employee_id INT NOT NULL REFERENCES employee_profiles(id) ON DELETE CASCADE,
+        document_name VARCHAR(255) NOT NULL,
+        file_path VARCHAR(255) NOT NULL,
+        document_type VARCHAR(100) DEFAULT 'General',
+        uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS team_scrum_reports (
+        id SERIAL PRIMARY KEY,
+        team_id INT NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+        user_id INT REFERENCES users(id) ON DELETE SET NULL,
+        report_type VARCHAR(50) NOT NULL,
+        report_date DATE DEFAULT CURRENT_DATE,
+        tasks_completed TEXT,
+        tasks_planned TEXT,
+        blockers TEXT,
+        file_path VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+
+      CREATE TABLE IF NOT EXISTS team_repositories (
+        id SERIAL PRIMARY KEY,
+        team_id INT NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+        repo_name VARCHAR(100) NOT NULL,
+        description TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(team_id, repo_name)
+      );
+
+      CREATE TABLE IF NOT EXISTS team_repo_commits (
+        id SERIAL PRIMARY KEY,
+        repo_id INT NOT NULL REFERENCES team_repositories(id) ON DELETE CASCADE,
+        user_id INT REFERENCES users(id) ON DELETE SET NULL,
+        branch_name VARCHAR(50) DEFAULT 'main',
+        commit_message VARCHAR(255) NOT NULL,
+        commit_hash VARCHAR(40) NOT NULL,
+        changed_files JSONB NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `).then(() => {
+      logger.info('Unified tables verification and dynamic boot creation completed.');
+    }).catch(err => {
+      logger.error('Error verifying database tables:', err);
+    });
   });
 }
 

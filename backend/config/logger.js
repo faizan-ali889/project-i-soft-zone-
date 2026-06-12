@@ -3,10 +3,16 @@ const winston = require('winston');
 const path = require('path');
 const fs = require('fs');
 
-// Ensure logs directory exists
+const isServerless = process.env.VERCEL || process.env.NODE_ENV === 'production';
 const logsDir = path.resolve(__dirname, '../logs');
-if (!fs.existsSync(logsDir)) {
-  fs.mkdirSync(logsDir, { recursive: true });
+
+// Only attempt to create logs directory if not in a serverless environment
+if (!isServerless && !fs.existsSync(logsDir)) {
+  try {
+    fs.mkdirSync(logsDir, { recursive: true });
+  } catch (err) {
+    console.warn('Failed to create logs directory:', err.message);
+  }
 }
 
 const logFormat = winston.format.combine(
@@ -15,11 +21,19 @@ const logFormat = winston.format.combine(
   winston.format.json()
 );
 
-const logger = winston.createLogger({
-  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
-  format: logFormat,
-  defaultMeta: { service: 'employee-service' },
-  transports: [
+const transports = [];
+
+if (isServerless) {
+  // Console-only logging on serverless platforms
+  transports.push(new winston.transports.Console({
+    format: winston.format.combine(
+      winston.format.colorize(),
+      winston.format.simple()
+    )
+  }));
+} else {
+  // File + Console logging locally
+  transports.push(
     new winston.transports.File({ 
       filename: path.join(logsDir, 'error.log'), 
       level: 'error' 
@@ -27,17 +41,23 @@ const logger = winston.createLogger({
     new winston.transports.File({ 
       filename: path.join(logsDir, 'combined.log') 
     })
-  ]
-});
-
-// Write to Console in development or staging modes
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console({
-    format: winston.format.combine(
-      winston.format.colorize(),
-      winston.format.simple()
-    )
-  }));
+  );
+  
+  if (process.env.NODE_ENV !== 'production') {
+    transports.push(new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple()
+      )
+    }));
+  }
 }
+
+const logger = winston.createLogger({
+  level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+  format: logFormat,
+  defaultMeta: { service: 'employee-service' },
+  transports: transports
+});
 
 module.exports = logger;

@@ -92,6 +92,7 @@ const Dashboard = () => {
             const active = teamDetail.jobs.filter(j => j.status !== 'COMPLETED');
             active.forEach(j => {
               j.team_name = t.team_name;
+              j.team_id = t.team_id || t.id;
             });
             jobsList.push(...active);
           }
@@ -226,28 +227,29 @@ const Dashboard = () => {
           100% { r: 4; opacity: 1; }
         }
 
-        /* Configure button hover effect */
-        .config-btn {
-          background: #6366f1;
-          color: white;
-          border: none;
-          padding: 0.5rem 1rem;
-          border-radius: 8px;
-          font-weight: 600;
-          font-size: 0.82rem;
+        /* Row clickable hover effects */
+        .leaderboard-team-row {
           cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-          box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+          border-radius: 8px;
+          padding: 0.35rem 0.5rem;
+          margin: 0 -0.5rem;
+          transition: all 0.25s ease;
         }
-
-        .config-btn:hover {
-          background: #4f46e5;
-          transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+        .leaderboard-team-row:hover {
+          background: rgba(255, 255, 255, 0.05);
+          transform: translateX(4px);
         }
-
-        .config-btn:active {
-          transform: translateY(0);
+        
+        .active-task-row {
+          cursor: pointer;
+          border-radius: 8px;
+          padding: 0.35rem 0.5rem;
+          margin: 0 -0.5rem;
+          transition: all 0.25s ease;
+        }
+        .active-task-row:hover {
+          background: rgba(255, 255, 255, 0.05);
+          transform: translateX(4px);
         }
       `}</style>
 
@@ -283,12 +285,10 @@ const Dashboard = () => {
             Project Overview - Q3 Performance
           </h1>
           <p style={{ color: '#64748b', margin: '0.2rem 0 0 0', fontSize: '0.85rem', fontWeight: '500' }}>
-            Ultra-clean HSL violet & cool grey pallette
+            Track key performance indicators, active projects, and team milestones.
           </p>
         </div>
-        <button className="config-btn">
-          + Configure
-        </button>
+
       </div>
 
       {/* Row 2: 4 KPI Cards (Using real relatable database data) */}
@@ -299,7 +299,11 @@ const Dashboard = () => {
         marginBottom: '1.5rem'
       }}>
         {/* Card 1: Total Employees */}
-        <div className="interactive-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <div 
+          className="interactive-card" 
+          onClick={() => navigate('/employees')}
+          style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', cursor: 'pointer' }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ color: '#94a3b8', fontSize: '0.82rem', fontWeight: '500' }}>Total Employees</span>
             <span style={{
@@ -346,7 +350,11 @@ const Dashboard = () => {
         </div>
 
         {/* Card 2: Pending Leaves */}
-        <div className="interactive-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <div 
+          className="interactive-card" 
+          onClick={() => navigate(['ADMIN', 'HR', 'MANAGER'].includes(user?.role) ? '/approvals' : '/leaves')}
+          style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', cursor: 'pointer' }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ color: '#94a3b8', fontSize: '0.82rem', fontWeight: '500' }}>Pending Leave Review</span>
             <span style={{
@@ -387,7 +395,11 @@ const Dashboard = () => {
         </div>
 
         {/* Card 3: Hardware Allocated */}
-        <div className="interactive-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <div 
+          className="interactive-card" 
+          onClick={() => navigate('/assets')}
+          style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', cursor: 'pointer' }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ color: '#94a3b8', fontSize: '0.82rem', fontWeight: '500' }}>Hardware Allocated</span>
             <span style={{
@@ -425,7 +437,11 @@ const Dashboard = () => {
         </div>
 
         {/* Card 4: Active Teams */}
-        <div className="interactive-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <div 
+          className="interactive-card" 
+          onClick={() => navigate('/teams')}
+          style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', cursor: 'pointer' }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span style={{ color: '#94a3b8', fontSize: '0.82rem', fontWeight: '500' }}>Active Teams</span>
             <span style={{
@@ -773,7 +789,12 @@ const Dashboard = () => {
                   const assignee = job.assignee_name || 'Unassigned';
 
                   return (
-                    <div key={job.id || idx} style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                    <div 
+                      key={job.id || idx} 
+                      onClick={() => navigate(`/teams/${job.team_id}`)}
+                      className="active-task-row"
+                      style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}
+                    >
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', fontWeight: '600' }}>
                         <span style={{ color: '#94a3b8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '75%' }} title={job.job_title}>
                           {job.job_title}
@@ -851,13 +872,17 @@ const Dashboard = () => {
                   const color = colors[idx % colors.length];
 
                   return (
-                    <div key={team.team_id || idx} style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.65rem',
-                      padding: '0.2rem 0',
-                      transition: 'all 0.2s ease'
-                    }}>
+                    <div 
+                      key={team.team_id || idx} 
+                      onClick={() => navigate(`/teams/${team.team_id || team.id}`)}
+                      className="leaderboard-team-row"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.65rem',
+                        transition: 'all 0.2s ease'
+                      }}
+                    >
                       {/* Avatar circle */}
                       <div style={{
                         width: '24px',

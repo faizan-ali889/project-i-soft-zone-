@@ -84,6 +84,39 @@ class EmployeeRepository {
     return result.rows[0];
   }
 
+  static async getDocuments(employeeId) {
+    const result = await db.query(
+      'SELECT id, document_name, file_path, document_type, uploaded_at FROM employee_documents WHERE employee_id = $1 ORDER BY uploaded_at DESC',
+      [employeeId]
+    );
+    return result.rows;
+  }
+
+  static async insertDocument(employeeId, documentName, filePath, documentType) {
+    const result = await db.query(
+      `INSERT INTO employee_documents (employee_id, document_name, file_path, document_type)
+       VALUES ($1, $2, $3, $4) RETURNING *`,
+      [employeeId, documentName, filePath, documentType]
+    );
+    return result.rows[0];
+  }
+
+  static async getDocumentById(documentId) {
+    const result = await db.query(
+      'SELECT id, employee_id, document_name, file_path, document_type, uploaded_at FROM employee_documents WHERE id = $1',
+      [documentId]
+    );
+    return result.rows[0];
+  }
+
+  static async deleteDocument(documentId) {
+    const result = await db.query(
+      'DELETE FROM employee_documents WHERE id = $1 RETURNING *',
+      [documentId]
+    );
+    return result.rows[0];
+  }
+
   static async updateProfile(id, departmentId, phone, address, designation, salary) {
     const result = await db.query(
       `UPDATE employee_profiles 

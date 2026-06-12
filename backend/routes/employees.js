@@ -8,12 +8,21 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+const os = require('os');
+
+const isProduction = process.env.NODE_ENV === 'production' || process.env.VERCEL;
+const uploadBase = isProduction ? os.tmpdir() : path.resolve(__dirname, '../');
+const uploadDir = path.join(uploadBase, 'uploads/employees');
+
 // Ensure standard uploads subdirectories exist
-const uploadDir = path.resolve(__dirname, '../uploads/employees');
 ['employees', 'documents', 'certificates', 'assets'].forEach(folder => {
-  const dir = path.resolve(__dirname, `../uploads/${folder}`);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  const dir = path.join(uploadBase, `uploads/${folder}`);
+  try {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  } catch (err) {
+    console.warn(`Skipping folder creation for ${folder} (read-only):`, err.message);
   }
 });
 
@@ -67,5 +76,37 @@ router.delete('/:id', authMiddleware, EmployeeController.deleteEmployee);
 
 // POST upload images
 router.post('/:id/upload', authMiddleware, upload.array('images', 5), EmployeeController.uploadImages);
+
+// Document Multer Configuration
+const docStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(uploadBase, 'uploads/documents'));
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+
+const docFileFilter = (req, file, cb) => {
+  const allowedExtensions = ['.pdf', '.doc', '.docx', '.png', '.jpg', '.jpeg', '.webp'];
+  const ext = path.extname(file.originalname).toLowerCase();
+  
+  if (!allowedExtensions.includes(ext)) {
+    return cb(new Error('Allowed file formats: PDF, DOC, DOCX, PNG, JPG, JPEG, WEBP'), false);
+  }
+  cb(null, true);
+};
+
+const uploadDoc = multer({
+  storage: docStorage,
+  fileFilter: docFileFilter,
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+});
+
+// POST upload documents
+router.post('/:id/documents', authMiddleware, uploadDoc.array('documents', 10), EmployeeController.uploadDocuments);
+
+// DELETE document
+router.delete('/:id/documents/:docId', authMiddleware, EmployeeController.deleteDocument);
 
 module.exports = router;

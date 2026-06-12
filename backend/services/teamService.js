@@ -250,6 +250,79 @@ class TeamService {
       conflicts
     };
   }
+
+  async getScrumReports(teamId) {
+    const result = await db.query(
+      `SELECT sr.*, u.name as employee_name, u.email
+       FROM team_scrum_reports sr
+       LEFT JOIN users u ON sr.user_id = u.id
+       WHERE sr.team_id = $1
+       ORDER BY sr.created_at DESC`,
+      [teamId]
+    );
+    return result.rows;
+  }
+
+  async createScrumReport(teamId, userId, reportData) {
+    const { report_type, tasks_completed, tasks_planned, blockers, file } = reportData;
+    let filePath = null;
+    if (file) {
+      filePath = `/uploads/reports/${file.filename}`;
+    }
+    const result = await db.query(
+      `INSERT INTO team_scrum_reports (team_id, user_id, report_type, tasks_completed, tasks_planned, blockers, file_path)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING *`,
+      [teamId, userId, report_type, tasks_completed, tasks_planned, blockers, filePath]
+    );
+    return result.rows[0];
+  }
+
+  async getRepositories(teamId) {
+    const result = await db.query(
+      `SELECT * FROM team_repositories WHERE team_id = $1 ORDER BY created_at DESC`,
+      [teamId]
+    );
+    return result.rows;
+  }
+
+  async createRepository(teamId, repoData) {
+    const { repo_name, description } = repoData;
+    const result = await db.query(
+      `INSERT INTO team_repositories (team_id, repo_name, description)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (team_id, repo_name) DO UPDATE SET description = EXCLUDED.description
+       RETURNING *`,
+      [teamId, repo_name, description]
+    );
+    return result.rows[0];
+  }
+
+  async getCommits(repoId) {
+    const result = await db.query(
+      `SELECT tc.*, u.name as employee_name, u.email
+       FROM team_repo_commits tc
+       LEFT JOIN users u ON tc.user_id = u.id
+       WHERE tc.repo_id = $1
+       ORDER BY tc.created_at DESC`,
+      [repoId]
+    );
+    return result.rows;
+  }
+
+  async createCommit(repoId, userId, commitData) {
+    const { branch_name, commit_message, changed_files } = commitData;
+    const crypto = require('crypto');
+    const randomBytes = crypto.randomBytes(20).toString('hex');
+    
+    const result = await db.query(
+      `INSERT INTO team_repo_commits (repo_id, user_id, branch_name, commit_message, commit_hash, changed_files)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING *`,
+      [repoId, userId, branch_name || 'main', commit_message, randomBytes, JSON.stringify(changed_files || {})]
+    );
+    return result.rows[0];
+  }
 }
 
 module.exports = new TeamService();

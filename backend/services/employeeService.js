@@ -85,8 +85,9 @@ class EmployeeService {
 
     const skills = await EmployeeRepository.getSkills(id);
     const images = await EmployeeRepository.getImages(id);
+    const documents = await EmployeeRepository.getDocuments(id);
 
-    return { employee, skills, images };
+    return { employee, skills, images, documents };
   }
 
   static async updateEmployee(id, employeeData, performedByUser) {
@@ -162,6 +163,68 @@ class EmployeeService {
 
     logger.info(`Uploaded ${files.length} images for Employee ID ${id}`);
     return uploadedImages;
+  }
+
+  static async uploadDocuments(id, files, documentType) {
+    if (!files || files.length === 0) {
+      throw new ValidationError('No files provided for upload');
+    }
+
+    // Verify employee profile exists
+    const existingProfile = await EmployeeRepository.getById(id);
+    if (!existingProfile) {
+      throw new NotFoundError('Employee not found');
+    }
+
+    const uploadedDocs = [];
+    for (const file of files) {
+      // Normalize paths to forward slashes for storage and API responses
+      const normalizedPath = `/uploads/documents/${file.filename}`;
+      const docName = file.originalname;
+      const doc = await EmployeeRepository.insertDocument(id, docName, normalizedPath, documentType || 'General');
+      uploadedDocs.push(doc);
+    }
+
+    logger.info(`Uploaded ${files.length} documents for Employee ID ${id}`);
+    return uploadedDocs;
+  }
+
+  static async deleteDocument(id, docId) {
+    const fs = require('fs');
+    const path = require('path');
+
+    // Verify employee profile exists
+    const existingProfile = await EmployeeRepository.getById(id);
+    if (!existingProfile) {
+      throw new NotFoundError('Employee not found');
+    }
+
+    // Get the document
+    const doc = await EmployeeRepository.getDocumentById(docId);
+    if (!doc) {
+      throw new NotFoundError('Document not found');
+    }
+
+    // Verify document belongs to the employee
+    if (doc.employee_id !== parseInt(id)) {
+      throw new ValidationError('Document does not belong to this employee');
+    }
+
+    // Delete record from DB
+    await EmployeeRepository.deleteDocument(docId);
+
+    // Try deleting the physical file
+    const absolutePath = path.join(__dirname, '..', doc.file_path);
+    fs.unlink(absolutePath, (err) => {
+      if (err) {
+        logger.error(`Error deleting physical file: ${absolutePath}`, err);
+      } else {
+        logger.info(`Deleted physical file: ${absolutePath}`);
+      }
+    });
+
+    logger.info(`Deleted document ID ${docId} for Employee ID ${id}`);
+    return { success: true };
   }
 }
 

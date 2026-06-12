@@ -117,6 +117,79 @@ class TeamController {
       next(error);
     }
   }
+
+  async getScrumReports(req, res, next) {
+    try {
+      const { id } = req.params;
+      const reports = await TeamService.getScrumReports(id);
+      res.json(reports);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async createScrumReport(req, res, next) {
+    try {
+      const { id } = req.params;
+      const reportData = {
+        report_type: req.body.report_type,
+        tasks_completed: req.body.tasks_completed,
+        tasks_planned: req.body.tasks_planned,
+        blockers: req.body.blockers,
+        file: req.file
+      };
+      const report = await TeamService.createScrumReport(id, req.user.id, reportData);
+      res.status(201).json({ message: 'Scrum report uploaded successfully', report });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getRepositories(req, res, next) {
+    try {
+      const { id } = req.params;
+      const repos = await TeamService.getRepositories(id);
+      res.json(repos);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async createRepository(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { repo_name, description } = req.body;
+      const repo = await TeamService.createRepository(id, { repo_name, description });
+      res.status(201).json({ message: 'Repository created successfully', repo });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getCommits(req, res, next) {
+    try {
+      const { repoId } = req.params;
+      const commits = await TeamService.getCommits(repoId);
+      res.json(commits);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async createCommit(req, res, next) {
+    try {
+      const { repoId } = req.params;
+      const { branch_name, commit_message, changed_files } = req.body;
+      const commit = await TeamService.createCommit(repoId, req.user.id, {
+        branch_name,
+        commit_message,
+        changed_files
+      });
+      res.status(201).json({ message: 'Code pushed successfully', commit });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = new TeamController();

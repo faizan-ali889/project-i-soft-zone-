@@ -78,6 +78,42 @@ class EmployeeController {
       next(error);
     }
   }
+
+  static async uploadDocuments(req, res, next) {
+    try {
+      const { id } = req.params;
+      const { documentType } = req.body;
+
+      if (!['ADMIN', 'HR'].includes(req.user.role)) {
+        return res.status(403).json({ message: 'Forbidden: Only Admin or HR can upload documents' });
+      }
+
+      const documents = await EmployeeService.uploadDocuments(id, req.files, documentType);
+      res.status(201).json({
+        message: 'Documents uploaded successfully',
+        documents
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async deleteDocument(req, res, next) {
+    try {
+      const { id, docId } = req.params;
+
+      if (!['ADMIN', 'HR'].includes(req.user.role)) {
+        return res.status(403).json({ message: 'Forbidden: Only Admin or HR can delete documents' });
+      }
+
+      await EmployeeService.deleteDocument(id, docId);
+      res.status(200).json({
+        message: 'Document deleted successfully'
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 module.exports = EmployeeController;

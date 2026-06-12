@@ -257,7 +257,7 @@ const RoleManagement = () => {
                 padding: '0.75rem 1rem',
                 borderRadius: '8px',
                 border: '1px solid var(--border-color)',
-                backgroundColor: '#ffffff',
+                backgroundColor: 'rgba(15, 23, 42, 0.6)',
                 color: 'var(--text-primary)',
                 outline: 'none',
                 boxSizing: 'border-box',
@@ -272,10 +272,10 @@ const RoleManagement = () => {
                 e.target.style.boxShadow = 'none';
               }}
             >
-              <option value="EMPLOYEE">Employee (Standard Access)</option>
-              <option value="MANAGER">Manager (Approval Access)</option>
-              <option value="HR">HR (Analytics & Final Approvals)</option>
-              <option value="ADMIN">Administrator (Full System Controls)</option>
+              <option value="EMPLOYEE" style={{ backgroundColor: 'var(--bg-base)' }}>Employee (Standard Access)</option>
+              <option value="MANAGER" style={{ backgroundColor: 'var(--bg-base)' }}>Manager (Approval Access)</option>
+              <option value="HR" style={{ backgroundColor: 'var(--bg-base)' }}>HR (Analytics & Final Approvals)</option>
+              <option value="ADMIN" style={{ backgroundColor: 'var(--bg-base)' }}>Administrator (Full System Controls)</option>
             </select>
           </div>
 
@@ -291,7 +291,7 @@ const RoleManagement = () => {
                 padding: '0.75rem 1rem',
                 borderRadius: '8px',
                 border: '1px solid var(--border-color)',
-                backgroundColor: '#ffffff',
+                backgroundColor: 'rgba(15, 23, 42, 0.6)',
                 color: 'var(--text-primary)',
                 outline: 'none',
                 boxSizing: 'border-box',
@@ -306,9 +306,9 @@ const RoleManagement = () => {
                 e.target.style.boxShadow = 'none';
               }}
             >
-              <option value="">No manager assigned</option>
+              <option value="" style={{ backgroundColor: 'var(--bg-base)' }}>No manager assigned</option>
               {getPotentialManagers().map(m => (
-                <option key={m.user_id} value={m.user_id}>{m.employee_name} ({m.role || 'EMPLOYEE'})</option>
+                <option key={m.user_id} value={m.user_id} style={{ backgroundColor: 'var(--bg-base)' }}>{m.employee_name} ({m.role || 'EMPLOYEE'})</option>
               ))}
             </select>
           </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { employeeAPI, departmentAPI, skillAPI } from '../services/api';
+import { employeeAPI, departmentAPI, skillAPI, SERVER_URL } from '../services/api';
 import Button from '../components/Button';
 import Loader from '../components/Loader';
 
@@ -418,7 +418,7 @@ const EditEmployee = () => {
                   textAlign: 'center'
                 }}>
                   <img 
-                    src={`http://localhost:5000${img.image_url}`} 
+                    src={`${SERVER_URL}${img.image_url}`} 
                     alt="Employee"
                     style={{
                       width: '100%',

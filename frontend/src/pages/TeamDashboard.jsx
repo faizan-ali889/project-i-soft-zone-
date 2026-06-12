@@ -5,6 +5,7 @@ import { teamAPI, employeeAPI } from '../services/api';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import Loader from '../components/Loader';
+import Modal from '../components/Modal';
 
 const TeamDashboard = () => {
   const { user } = useAuth();
@@ -90,10 +91,10 @@ const TeamDashboard = () => {
   };
 
   const getRankStyle = (rank) => {
-    if (rank === 1) return { border: '1px solid #fbbf24', background: 'rgba(251, 191, 36, 0.05)', color: '#d97706' };
-    if (rank === 2) return { border: '1px solid #94a3b8', background: 'rgba(148, 163, 184, 0.05)', color: '#475569' };
-    if (rank === 3) return { border: '1px solid #b45309', background: 'rgba(180, 83, 9, 0.03)', color: '#b45309' };
-    return { border: '1px solid var(--border-color)' };
+    if (rank === 1) return { border: '1px solid #fbbf24', background: 'rgba(251, 191, 36, 0.08)', color: '#f59e0b' };
+    if (rank === 2) return { border: '1px solid #94a3b8', background: 'rgba(148, 163, 184, 0.08)', color: '#cbd5e1' };
+    if (rank === 3) return { border: '1px solid #b45309', background: 'rgba(180, 83, 9, 0.06)', color: '#f97316' };
+    return { border: '1px solid var(--border-color)', background: 'rgba(255, 255, 255, 0.02)', color: 'var(--text-primary)' };
   };
 
   if (loading) return <Loader message="Accessing Team Workspace..." fullScreen />;
@@ -158,7 +159,8 @@ const TeamDashboard = () => {
         {/* Left Side: Performance Leaderboard */}
         <div style={{
           flex: '1 1 350px',
-          backgroundColor: '#ffffff',
+          background: 'var(--bg-card)',
+          backdropFilter: 'var(--card-blur)',
           border: '1px solid var(--border-color)',
           borderRadius: '16px',
           padding: '1.5rem',
@@ -209,7 +211,7 @@ const TeamDashboard = () => {
                       </p>
                     </div>
                     <div>
-                      <div style={{ height: '6px', width: '100%', backgroundColor: 'rgba(0,0,0,0.05)', borderRadius: '3px', overflow: 'hidden' }}>
+                      <div style={{ height: '6px', width: '100%', backgroundColor: 'rgba(255,255,255,0.08)', borderRadius: '3px', overflow: 'hidden' }}>
                         <div style={{ 
                           height: '100%', 
                           width: `${item.completion_rate}%`, 
@@ -252,7 +254,8 @@ const TeamDashboard = () => {
                   key={team.team_id}
                   onClick={() => navigate(`/teams/${team.team_id}`)}
                   style={{
-                    backgroundColor: '#ffffff',
+                    background: 'var(--bg-card)',
+                    backdropFilter: 'var(--card-blur)',
                     border: '1px solid var(--border-color)',
                     borderRadius: '16px',
                     padding: '1.5rem',
@@ -324,7 +327,8 @@ const TeamDashboard = () => {
             </div>
           ) : (
             <div style={{
-              backgroundColor: '#ffffff',
+              background: 'var(--bg-card)',
+              backdropFilter: 'var(--card-blur)',
               border: '1px solid var(--border-color)',
               borderRadius: '16px',
               padding: '3rem',
@@ -339,119 +343,94 @@ const TeamDashboard = () => {
       </div>
 
       {/* Create Team Modal Popup */}
-      {showCreateModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          backgroundColor: 'rgba(15, 23, 42, 0.4)',
-          backdropFilter: 'blur(8px)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 999,
-          animation: 'fadeIn 0.25s ease-out'
-        }}>
-          <div style={{
-            backgroundColor: '#ffffff',
-            border: '1px solid var(--border-color)',
-            borderRadius: '16px',
-            padding: '2rem',
-            width: '450px',
-            maxWidth: '90%',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-            boxSizing: 'border-box'
-          }}>
-            <h3 style={{ margin: '0 0 1.25rem 0', fontSize: '1.25rem', fontWeight: '800' }}>
-              Form New Workspace Team
-            </h3>
-            
-            <form onSubmit={handleCreateTeamSubmit}>
-              <div style={{ marginBottom: '1.25rem' }}>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
-                  Team Name
-                </label>
-                <input
-                  type="text"
-                  name="team_name"
-                  value={formData.team_name}
-                  onChange={handleInputChange}
-                  required
-                  placeholder="e.g., Core Engine Optimization"
-                  style={{ width: '100%', padding: '0.6rem 0.75rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '0.9rem', outline: 'none', color: 'var(--text-primary)' }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '1.25rem' }}>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  placeholder="Describe the targets or focus areas of this team..."
-                  rows="3"
-                  style={{ width: '100%', padding: '0.6rem 0.75rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '0.9rem', outline: 'none', color: 'var(--text-primary)', resize: 'vertical', fontFamily: 'inherit' }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '1.25rem' }}>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
-                  Team Lead
-                </label>
-                <select
-                  name="team_lead_id"
-                  value={formData.team_lead_id}
-                  onChange={handleInputChange}
-                  style={{ width: '100%', padding: '0.6rem 0.75rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '0.9rem', outline: 'none', color: 'var(--text-primary)', backgroundColor: '#ffffff' }}
-                >
-                  <option value="">-- Select Team Lead (Optional) --</option>
-                  {employees.map(emp => (
-                    <option key={emp.id} value={emp.user_id}>
-                      {emp.name || emp.employee_name} ({emp.designation || 'Staff'})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div style={{ marginBottom: '1.75rem' }}>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
-                  Sprint Target Deadline
-                </label>
-                <input
-                  type="date"
-                  name="deadline"
-                  value={formData.deadline}
-                  onChange={handleInputChange}
-                  style={{ width: '100%', padding: '0.6rem 0.75rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '0.9rem', outline: 'none', color: 'var(--text-primary)' }}
-                />
-              </div>
-
-              <div style={{ display: 'flex', justifyItems: 'flex-end', gap: '1rem', width: '100%' }}>
-                <Button
-                  onClick={() => setShowCreateModal(false)}
-                  variant="secondary"
-                  type="button"
-                  style={{ flex: 1 }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  type="submit"
-                  disabled={submitting}
-                  style={{ flex: 1 }}
-                >
-                  {submitting ? 'Creating...' : 'Create Team'}
-                </Button>
-              </div>
-            </form>
+      <Modal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        title="Form New Workspace Team"
+        maxWidth="450px"
+      >
+        <form onSubmit={handleCreateTeamSubmit}>
+          <div style={{ marginBottom: '1.25rem' }}>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+              Team Name
+            </label>
+            <input
+              type="text"
+              name="team_name"
+              value={formData.team_name}
+              onChange={handleInputChange}
+              required
+              placeholder="e.g., Core Engine Optimization"
+              style={{ width: '100%', padding: '0.6rem 0.75rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '0.9rem', outline: 'none', color: 'var(--text-primary)', backgroundColor: 'rgba(15, 23, 42, 0.6)' }}
+            />
           </div>
-        </div>
-      )}
+
+          <div style={{ marginBottom: '1.25rem' }}>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+              Description
+            </label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              placeholder="Describe the targets or focus areas of this team..."
+              rows="3"
+              style={{ width: '100%', padding: '0.6rem 0.75rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '0.9rem', outline: 'none', color: 'var(--text-primary)', resize: 'vertical', fontFamily: 'inherit', backgroundColor: 'rgba(15, 23, 42, 0.6)' }}
+            />
+          </div>
+
+          <div style={{ marginBottom: '1.25rem' }}>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+              Team Lead
+            </label>
+            <select
+              name="team_lead_id"
+              value={formData.team_lead_id}
+              onChange={handleInputChange}
+              style={{ width: '100%', padding: '0.6rem 0.75rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '0.9rem', outline: 'none', color: 'var(--text-primary)', backgroundColor: 'rgba(15, 23, 42, 0.6)' }}
+            >
+              <option value="" style={{ backgroundColor: 'var(--bg-base)' }}>-- Select Team Lead (Optional) --</option>
+              {employees.map(emp => (
+                <option key={emp.id} value={emp.user_id} style={{ backgroundColor: 'var(--bg-base)' }}>
+                  {emp.name || emp.employee_name} ({emp.designation || 'Staff'})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ marginBottom: '1.75rem' }}>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
+              Sprint Target Deadline
+            </label>
+            <input
+              type="date"
+              name="deadline"
+              value={formData.deadline}
+              onChange={handleInputChange}
+              style={{ width: '100%', padding: '0.6rem 0.75rem', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '0.9rem', outline: 'none', color: 'var(--text-primary)', backgroundColor: 'rgba(15, 23, 42, 0.6)' }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '1rem', width: '100%' }}>
+            <Button
+              onClick={() => setShowCreateModal(false)}
+              variant="secondary"
+              type="button"
+              style={{ flex: 1 }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={submitting}
+              style={{ flex: 1 }}
+            >
+              {submitting ? 'Creating...' : 'Create Team'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };

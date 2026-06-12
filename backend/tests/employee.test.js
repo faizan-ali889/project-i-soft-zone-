@@ -48,4 +48,20 @@ describe('Employee API Endpoints', () => {
       expect(res.statusCode).toEqual(422); // Validation error
     });
   });
+
+  describe('Document Routes Authorization', () => {
+    it('should block uploading documents when unauthorized', async () => {
+      const res = await request(app)
+        .post('/api/v1/employees/1/documents')
+        .send();
+      expect(res.statusCode).toEqual(401);
+    });
+
+    it('should block deleting documents when unauthorized', async () => {
+      const res = await request(app)
+        .delete('/api/v1/employees/1/documents/1')
+        .send();
+      expect(res.statusCode).toEqual(401);
+    });
+  });
 });
