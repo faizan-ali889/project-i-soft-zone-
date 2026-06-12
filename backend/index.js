@@ -90,7 +90,7 @@ app.get('/', (req, res) => {
 app.use(errorHandler);
 
 // Start Server
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
   app.listen(port, () => {
     logger.info(`Server running on port ${port} in ${process.env.NODE_ENV || 'development'} mode`);
     logger.info(`API Documentation available at http://localhost:${port}/api-docs`);
