@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const SERVER_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '' : 'http://localhost:5000');
+export const SERVER_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://i-soft-project.onrender.com' : 'http://localhost:5000');
 const API_BASE_URL = `${SERVER_URL}/api`;
 
 // Create axios instance with common config
