@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "npm install --prefix frontend && npm run build --prefix frontend && node -e \"const fs=require('fs'); fs.cpSync('frontend/dist', 'dist', {recursive:true})\""
+    "build": "npm install --prefix frontend && npm run build --prefix frontend"
   },
   "dependencies": {
     "axios": "^1.16.1",
