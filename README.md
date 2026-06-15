@@ -430,3 +430,5 @@ mkdir -p backend/uploads/employees
 
 ## 📄 License
 This codebase is developed as part of an advanced full-stack engineering training program. All rights reserved.
+#updated by mohammed faizan
+
